@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { Send } from "lucide-react";
+import { MessageCircle, Send } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -162,12 +162,11 @@ export default function ChatPage() {
 	return (
 		<>
 			{/* Header Section with "Talkify" as logo */}
-			<header className='flex justify-between items-center p-4 bg-white shadow-md'>
+			<header className='w-full h-16 sticky top-0 flex justify-between items-center p-4 bg-white shadow-md'>
 				<div className='flex items-center'>
 					{/* Text Logo */}
-					<h1 className='text-3xl font-bold text-blue-600'>
-						Talkify
-					</h1>
+					<MessageCircle className='w-8 h-8 text-black mr-2' />
+					<h1 className='text-3xl font-bold text-black'>Talkify</h1>
 				</div>
 				<Button
 					onClick={() => {
@@ -178,7 +177,7 @@ export default function ChatPage() {
 					Join Own Chat Room
 				</Button>
 			</header>
-			<div className='flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4'>
+			<div className='flex flex-col items-center justify-center bg-gray-100 p-4 room-area'>
 				{joinedRoom ? (
 					<ChatArea roomId={joinedRoom} />
 				) : (

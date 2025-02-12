@@ -104,3 +104,8 @@ body {
 		@apply bg-background text-foreground;
 	}
 }
+
+.room-area {
+	box-sizing: border-box;
+	height: calc(100vh - 64px) !important;
+}
