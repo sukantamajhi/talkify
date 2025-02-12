@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Welcome to StoreHubCRM</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header {
+            background-color: #0064ff;
+            padding: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .header img {
+            max-width: 100px;
+        }
+
+        .content {
+            padding: 20px;
+            color: #333333;
+            font-size: 16px;
+        }
+
+        .content h2 {
+            color: #0064ff;
+            font-size: 22px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #0064ff !important;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: 0.3s ease-in-out;
+        }
+
+        .button:hover {
+            background-color: #0056cc;
+        }
+
+        .footer {
+            padding: 10px;
+            font-size: 12px;
+            color: #666666;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 90%;
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://cdn-icons-png.flaticon.com/512/724/724715.png" alt="Chat App Icon">
+        </div>
+        <div class="content">
+            <h2>Welcome to Talkify!</h2>
+            <p>Hello <b>{{name}}</b>,</p>
+            <p>Congratulations on successfully registering with us! We're excited to have you as part of our community.
+            </p>
+            <p>Feel free to explore all the features available to you. If you have any questions, don't hesitate to
+                reach out to us.</p>
+            <p>We look forward to providing you with an excellent experience!</p>
+            <!-- <a href="{{userDashboardLink}}" class="button">Go to Dashboard</a> -->
+        </div>
+        <div class="footer">
+            &copy; 2025 Talkify. All rights reserved.
+        </div>
+    </div>
+</body>
+
+</html>
