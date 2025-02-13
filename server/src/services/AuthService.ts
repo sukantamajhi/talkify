@@ -25,7 +25,7 @@ const checkUserExists = async ({
 }: Partial<ICheckUserExist>) => {
 	// logger.info(email, username, 'Checking user exists');
 	const user = await UserModel.findOne({
-		$or: [{ email }, { username }],
+		email,
 		isActive,
 	});
 	return user;
