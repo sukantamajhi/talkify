@@ -16,9 +16,11 @@ interface Message {
 function ChatArea({
 	room,
 	socket,
+	joinAnotherRoom,
 }: {
 	room: IRoomDetails | null;
 	socket: any;
+	joinAnotherRoom: Function;
 }) {
 	const [messages, setMessages] = useState<any[]>([]);
 	const [newMessage, setNewMessage] = useState("");
@@ -70,25 +72,41 @@ function ChatArea({
 		}
 	};
 
+	const handleJoinAnotherRoom = () => {
+		joinAnotherRoom();
+	};
+
 	return (
 		<Card className='w-full max-w-2xl h-[80vh] flex flex-col bg-white shadow-xl rounded-3xl overflow-hidden transition-all duration-300'>
 			{/* Header */}
-			<CardHeader className='flex flex-row items-center space-x-4 pb-4 bg-indigo-600 p-4 rounded-t-3xl text-white'>
-				<Avatar className='w-16 h-16 border-2 border-white transition-transform transform hover:scale-110'>
-					<AvatarImage
-						src='https://avatars.dicebear.com/api/avataaars/john-doe.svg'
-						alt='User avatar'
-					/>
-					<AvatarFallback>JD</AvatarFallback>
-				</Avatar>
-				<div>
-					<h2 className='text-3xl font-bold'>
-						Welcome to Chat Room #{room?.name}
-					</h2>
-					<p className='text-gray-100 text-lg'>
-						Start a conversation and chat away!
-					</p>
+			<CardHeader className='flex items-center justify-between pb-4 bg-indigo-600 p-6 rounded-t-3xl text-white'>
+				<div className='flex items-center space-x-4'>
+					{/* Avatar Section */}
+					<Avatar className='w-16 h-16 border-2 border-white transition-transform transform hover:scale-110'>
+						<AvatarImage
+							src='https://avatars.dicebear.com/api/avataaars/john-doe.svg'
+							alt='User avatar'
+						/>
+						<AvatarFallback>JD</AvatarFallback>
+					</Avatar>
+
+					{/* Text Section */}
+					<div className='text-white'>
+						<h2 className='text-xl font-bold'>
+							Welcome to Chat Room #{room?.name}
+						</h2>
+						<p className='text-gray-100 text-base'>
+							Dive into the conversation and make new connections!
+						</p>
+					</div>
 				</div>
+
+				{/* Button Section */}
+				<Button
+					onClick={handleJoinAnotherRoom}
+					className='px-6 py-2 rounded-lg text-white bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transform hover:scale-105 hover:shadow-lg transition-all duration-300'>
+					Switch to Another Room
+				</Button>
 			</CardHeader>
 
 			{/* Chat Messages */}
