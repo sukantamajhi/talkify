@@ -92,7 +92,7 @@ function ChatArea({
 
 					{/* Text Section */}
 					<div className='text-white'>
-						<h2 className='text-xl font-bold'>
+						<h2 className='text-2xl font-bold'>
 							Welcome to Chat Room #{room?.name}
 						</h2>
 						<p className='text-gray-100 text-base'>
@@ -104,7 +104,7 @@ function ChatArea({
 				{/* Button Section */}
 				<Button
 					onClick={handleJoinAnotherRoom}
-					className='px-6 py-2 rounded-lg text-white bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transform hover:scale-105 hover:shadow-lg transition-all duration-300'>
+					className='px-6 py-2 rounded-lg text-white bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transform hover:scale-105 hover:shadow-xl transition-all duration-300'>
 					Switch to Another Room
 				</Button>
 			</CardHeader>

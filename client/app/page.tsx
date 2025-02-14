@@ -133,33 +133,37 @@ export default function AuthPage() {
 							/>
 						</div>
 
-						<div className='mb-6 relative'>
+						<div className='mb-6'>
 							<Label
 								htmlFor='password'
 								className='text-lg font-medium'>
 								Password
 							</Label>
-							<Input
-								id='password'
-								type={passwordVisible ? "text" : "password"}
-								placeholder='Enter your password'
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								required
-								className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
-							/>
-							{/* Eye Icon */}
-							<div
-								className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
-								onClick={() =>
-									setPasswordVisible(!passwordVisible)
-								} // Toggle visibility
-							>
-								{passwordVisible ? (
-									<EyeOffIcon className='w-6 h-6 text-blue-800' />
-								) : (
-									<EyeIcon className='w-6 h-6 text-blue-800' />
-								)}
+							<div className='relative'>
+								<Input
+									id='password'
+									type={passwordVisible ? "text" : "password"}
+									placeholder='Enter your password'
+									value={password}
+									onChange={(e) =>
+										setPassword(e.target.value)
+									}
+									required
+									className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
+								/>
+								{/* Eye Icon */}
+								<div
+									className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
+									onClick={() =>
+										setPasswordVisible(!passwordVisible)
+									} // Toggle visibility
+								>
+									{passwordVisible ? (
+										<EyeOffIcon className='w-6 h-6 text-blue-800' />
+									) : (
+										<EyeIcon className='w-6 h-6 text-blue-800' />
+									)}
+								</div>
 							</div>
 						</div>
 

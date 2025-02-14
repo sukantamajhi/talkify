@@ -14,13 +14,15 @@ function RoomJoin({ onJoin }: { onJoin: (roomId: string) => void }) {
 	};
 
 	return (
-		<Card className='w-full max-w-md'>
-			<CardHeader>
-				<CardTitle>Join a Chat Room</CardTitle>
+		<Card className='w-full max-w-md bg-white shadow-lg rounded-xl p-6'>
+			<CardHeader className='pb-6'>
+				<CardTitle className='text-3xl font-semibold text-gray-900'>
+					Join a Chat Room
+				</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<form onSubmit={handleSubmit}>
-					<div className='mb-4'>
+				<form onSubmit={handleSubmit} className='space-y-6'>
+					<div className='mb-6'>
 						<Input
 							id='roomId'
 							type='text'
@@ -28,9 +30,13 @@ function RoomJoin({ onJoin }: { onJoin: (roomId: string) => void }) {
 							value={roomId}
 							onChange={(e) => setRoomId(e.target.value)}
 							required
+							className='p-4 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300'
 						/>
 					</div>
-					<Button type='submit' className='w-full'>
+
+					<Button
+						type='submit'
+						className='w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-700 text-white rounded-lg font-semibold text-lg transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 transform hover:scale-105'>
 						Join Room
 					</Button>
 				</form>
