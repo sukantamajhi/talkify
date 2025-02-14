@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { setLocalStorageValue } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function AuthPage() {
 	const { toast } = useToast();
@@ -37,11 +38,6 @@ export default function AuthPage() {
 		try {
 			setLoading(true);
 			if (!isLogin) {
-				const response = await axios.post("/auth/register", {
-					name,
-					email,
-					password,
-				});
 				setIsLogin(true);
 			} else {
 				const response = await axios.post("/auth/login", {
@@ -187,8 +183,20 @@ export default function AuthPage() {
 
 						<Button
 							type='submit'
+							disabled={loading} // Disable the button while loading
 							className='w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-700 text-white rounded-lg font-semibold text-lg transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 transform hover:scale-105'>
-							{isLogin ? "Login" : "Sign Up"}
+							{/* Conditionally render loading spinner or text */}
+							{loading ? (
+								<div className='flex justify-center items-center space-x-2'>
+									<div className='w-1.5 h-1.5 bg-white rounded-full animate-bounce'></div>
+									<div className='w-1.5 h-1.5 bg-white rounded-full animate-bounce delay-100'></div>
+									<div className='w-1.5 h-1.5 bg-white rounded-full animate-bounce delay-200'></div>
+								</div>
+							) : isLogin ? (
+								"Login"
+							) : (
+								"Sign Up"
+							)}
 						</Button>
 					</form>
 				</CardContent>
@@ -204,6 +212,8 @@ export default function AuthPage() {
 					</Button>
 				</CardFooter>
 			</Card>
+
+			<Toaster />
 		</div>
 	);
 }

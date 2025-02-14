@@ -5,13 +5,6 @@ import { AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Send } from "lucide-react";
-import { useSocket } from "@/hooks/useSocket";
-
-interface Message {
-	id: number;
-	message: string;
-	sender: "user" | "other" | "System";
-}
 
 function ChatArea({
 	room,
@@ -20,7 +13,7 @@ function ChatArea({
 }: {
 	room: IRoomDetails | null;
 	socket: any;
-	joinAnotherRoom: Function;
+	joinAnotherRoom: () => void;
 }) {
 	const [messages, setMessages] = useState<any[]>([]);
 	const [newMessage, setNewMessage] = useState("");
@@ -45,7 +38,7 @@ function ChatArea({
 		return () => {
 			socket.off("message");
 		};
-	}, [room]);
+	}, [room, socket, username]);
 
 	// Scroll to the bottom when messages update
 	useEffect(() => {
