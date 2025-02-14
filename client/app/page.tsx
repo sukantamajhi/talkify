@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MessageCircle } from "lucide-react";
+import { EyeIcon, EyeOffIcon, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,7 @@ export default function AuthPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
+	const [passwordVisible, setPasswordVisible] = useState(false); // Password visibility toggle state
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -75,15 +76,20 @@ export default function AuthPage() {
 	};
 
 	return (
-		<div className='min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4'>
-			<header className='mb-8 flex items-center'>
-				<MessageCircle className='w-8 h-8 text-primary mr-2' />
-				<h1 className='text-2xl font-bold text-primary'>Talkify</h1>
+		<div className='min-h-screen bg-gradient-to-r from-indigo-50 to-indigo-100 flex flex-col justify-center items-center p-6'>
+			<header className='mb-12 flex items-center'>
+				<MessageCircle className='w-10 h-10 text-primary mr-3' />
+				<h1 className='text-4xl font-extrabold text-primary'>
+					Talkify
+				</h1>
 			</header>
-			<Card className='w-full max-w-md'>
-				<CardHeader>
-					<CardTitle>{isLogin ? "Login" : "Sign Up"}</CardTitle>
-					<CardDescription>
+
+			<Card className='w-full max-w-md bg-white shadow-lg rounded-2xl'>
+				<CardHeader className='pb-6'>
+					<CardTitle className='text-3xl font-semibold'>
+						{isLogin ? "Login" : "Sign Up"}
+					</CardTitle>
+					<CardDescription className='text-gray-500 text-lg'>
 						{isLogin
 							? "Enter your credentials to access your account"
 							: "Create an account to get started"}
@@ -92,8 +98,12 @@ export default function AuthPage() {
 				<CardContent>
 					<form onSubmit={handleSubmit}>
 						{!isLogin && (
-							<div className='mb-4'>
-								<Label htmlFor='name'>Name</Label>
+							<div className='mb-6'>
+								<Label
+									htmlFor='name'
+									className='text-lg font-medium'>
+									Name
+								</Label>
 								<Input
 									id='name'
 									type='text'
@@ -101,11 +111,17 @@ export default function AuthPage() {
 									value={name}
 									onChange={(e) => setName(e.target.value)}
 									required
+									className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
 								/>
 							</div>
 						)}
-						<div className='mb-4'>
-							<Label htmlFor='email'>Email</Label>
+
+						<div className='mb-6'>
+							<Label
+								htmlFor='email'
+								className='text-lg font-medium'>
+								Email
+							</Label>
 							<Input
 								id='email'
 								type='email'
@@ -113,44 +129,71 @@ export default function AuthPage() {
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								required
+								className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
 							/>
 						</div>
-						<div className='mb-4'>
-							<Label htmlFor='password'>Password</Label>
+
+						<div className='mb-6 relative'>
+							<Label
+								htmlFor='password'
+								className='text-lg font-medium'>
+								Password
+							</Label>
 							<Input
 								id='password'
-								type='password'
+								type={passwordVisible ? "text" : "password"}
 								placeholder='Enter your password'
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
+								className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
 							/>
+							{/* Eye Icon */}
+							<div
+								className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
+								onClick={() =>
+									setPasswordVisible(!passwordVisible)
+								} // Toggle visibility
+							>
+								{passwordVisible ? (
+									<EyeOffIcon className='w-6 h-6 text-blue-800' />
+								) : (
+									<EyeIcon className='w-6 h-6 text-blue-800' />
+								)}
+							</div>
 						</div>
+
 						{isLogin && (
-							<div className='flex items-center space-x-2 mb-4'>
+							<div className='flex items-center space-x-2 mb-6'>
 								<Checkbox
 									id='remember'
 									checked={rememberMe}
 									onCheckedChange={(checked) =>
 										setRememberMe(checked as boolean)
 									}
+									className='text-indigo-600'
 								/>
-								<Label htmlFor='remember'>Remember me</Label>
+								<Label
+									htmlFor='remember'
+									className='text-gray-700'>
+									Remember me
+								</Label>
 							</div>
 						)}
-						<Button type='submit' className='w-full'>
+
+						<Button
+							type='submit'
+							className='w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-700 text-white rounded-lg font-semibold text-lg transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 transform hover:scale-105'>
 							{isLogin ? "Login" : "Sign Up"}
 						</Button>
 					</form>
 				</CardContent>
-				<CardFooter className='flex flex-col items-center'>
-					{/* <div className='mb-4'>
-						<Button variant='outline' className='mr-2'>
-							Google
-						</Button>
-						<Button variant='outline'>Facebook</Button>
-					</div> */}
-					<Button variant='link' onClick={() => setIsLogin(!isLogin)}>
+
+				<CardFooter className='flex flex-col items-center mt-6'>
+					<Button
+						variant='link'
+						onClick={() => setIsLogin(!isLogin)}
+						className='text-indigo-600 hover:underline text-lg'>
 						{isLogin
 							? "Don't have an account? Sign Up"
 							: "Already have an account? Login"}
