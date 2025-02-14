@@ -96,6 +96,7 @@ export default {
 	): Promise<{
 		token: string;
 		name: string;
+		userName: string;
 	}> => {
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -123,7 +124,11 @@ export default {
 				user.loginToken = token;
 				await user.save();
 
-				return resolve({ token, name: user.name });
+				return resolve({
+					token,
+					name: user.name,
+					userName: user.userName,
+				});
 			} catch (error: any) {
 				return reject(error.message);
 			}

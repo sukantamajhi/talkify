@@ -1,15 +1,16 @@
-import MessagesModel from "../models/MessagesModel";
+import MessagesModel, { IMessage } from "../models/MessagesModel";
 import logger from "../../logger";
 import { ISocketUser } from "../utils/types";
 
 const MessagesServices = (socket: ISocketUser, io: any) => {
 	socket.on("joinRoom", async (data) => {
-		if (socket.user.name && data.room) {
-			logger.info(`${socket.user.name} joined room: ${data.room}`);
+		if (socket.user.name && data.roomId) {
+			logger.info(`${socket.user.name} joined room: ${data.roomId}`);
 			socket.join(data.room);
 			socket.to(data.room).emit("message", {
 				sender: "system",
-				content: `${socket.user.name} has joined the chat.`,
+				message: `${socket.user.name} has joined the chat.`,
+				roomId: data.roomId,
 			});
 		}
 	});
@@ -24,7 +25,17 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 		});
 
 		const newMessage = await message.save();
-		io.to(data.room).emit("message", newMessage); // Send to everyone in the room
+
+		const constructedMessage: Pick<
+			IMessage,
+			"sender" | "roomId" | "message"
+		> = {
+			sender: socket.user.name,
+			roomId: data.roomId,
+			message: data.message,
+		};
+
+		io.to(data.room).emit("message", constructedMessage); // Send to everyone in the room
 	});
 
 	socket.on("disconnect", () => {

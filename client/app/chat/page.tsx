@@ -9,12 +9,18 @@ import RoomJoin from "@/components/Chat/RoomJoin";
 import { useSocket } from "@/hooks/useSocket";
 import axios from "@/lib/axios";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function ChatPage() {
 	const socket = useSocket();
+	const { toast } = useToast();
 	const [joinedRoom, setJoinedRoom] = useState<string | null>(null);
 	const [showJoinRoom, setShowJoinRoom] = useState<"OWN" | "OTHER">("OTHER");
 	const [username, setUsername] = useState<string>("");
+	const ownRoomId =
+		typeof window !== "undefined" && localStorage.getItem("selfRoomId");
+	const [room, setRoom] = useState<IRoomDetails | null>(null);
 
 	useEffect(() => {
 		const username = localStorage.getItem("username");
@@ -26,16 +32,38 @@ export default function ChatPage() {
 	const handleJoinRoom = async (roomId: string) => {
 		// In a real application, you would verify the room ID with your backend here
 
-		const isRoomExist = await axios.get(`/rooms/room-name/${roomId}`);
+		try {
+			const existingRoom = await axios.get(`/rooms/room-name/${roomId}`);
+			console.log(existingRoom, "<<-- existing room");
+			const room: IRoomDetails = existingRoom.data.data;
+			setRoom(room);
 
-		setJoinedRoom(roomId);
-		socket?.emit("joinRoom", { room: roomId, username });
+			setJoinedRoom(room._id);
+			socket?.emit("joinRoom", { roomId: room._id, username });
+		} catch (error: any) {
+			console.error(error, "<<-- Error in getting room details");
+			toast({
+				variant: "destructive",
+				description:
+					error?.response?.data?.message || "Something went wrong",
+				duration: 3000,
+			});
+			return;
+		}
 	};
 
-	const handleChatRoomToggle = () => {
+	const handleChatRoomToggle = async () => {
 		setShowJoinRoom((prev) => (prev === "OWN" ? "OTHER" : "OWN"));
 		if (showJoinRoom === "OTHER") {
-			setJoinedRoom("Sukanta Majhi");
+			const existingRoom = await axios.get(
+				`/rooms/room-name/${ownRoomId}`
+			);
+			console.log(existingRoom, "<<-- existing room");
+			const room: IRoomDetails = existingRoom.data.data;
+			setRoom(room);
+
+			setJoinedRoom(room._id);
+			socket?.emit("joinRoom", { roomId: room._id, username });
 		} else {
 			setJoinedRoom(null);
 		}
@@ -57,12 +85,13 @@ export default function ChatPage() {
 				</Button>
 			</header>
 			<div className='flex flex-col items-center justify-center bg-gray-100 p-4 room-area'>
-				{joinedRoom ? (
-					<ChatArea roomId={joinedRoom} socket={socket} />
+				{joinedRoom && room?._id ? (
+					<ChatArea room={room} socket={socket} />
 				) : (
 					<RoomJoin onJoin={handleJoinRoom} />
 				)}
 			</div>
+			<Toaster />
 		</>
 	);
 }

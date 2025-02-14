@@ -41,13 +41,13 @@ export default {
 		}
 
 		try {
-			const { token, name } = await authService.login(req.body);
+			const { token, name, userName } = await authService.login(req.body);
 
 			return res.status(200).send({
 				error: false,
 				code: "USER_LOGGED_IN",
 				message: UserMessages.USER_LOGGED_IN,
-				data: { name },
+				data: { name, userName },
 				token,
 			});
 		} catch (error: any) {

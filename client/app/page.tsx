@@ -53,6 +53,10 @@ export default function AuthPage() {
 					// save token to cookie
 					setLocalStorageValue("token", response.data.token);
 					localStorage.setItem("username", response.data.data.name);
+					localStorage.setItem(
+						"selfRoomId",
+						response.data.data.userName
+					);
 					// navigate to chat
 					router.push("/chat");
 				}
