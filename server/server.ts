@@ -50,22 +50,22 @@ io.use(async (socket: any, next: Function) => {
 		(socket.handshake.auth.token as string) ||
 		(socket.handshake.headers.token as string);
 
-	console.log(socket.handshake.headers.token, "<<-- token");
-
 	if (!token) {
-		console.log("❌ Authentication failed");
+		logger.error("❌ Authentication failed");
 		next(new Error("Authentication error"));
 	} else {
 		const user = await UserModel.findOne({
 			loginToken: token,
 			isActive: true,
 		});
-		console.log(user, "<<--- user");
 		if (!user) {
-			console.log("❌ Authentication failed");
+			logger.error("❌ Authentication failed");
 			next(new Error("Authentication error"));
 		} else {
-			console.log("✅ Authentication successful");
+			logger.info("✅ Authentication successful");
+
+			socket.user = user; // Attach user details to socket
+
 			next(); // Allow connection
 		}
 	}
@@ -73,7 +73,7 @@ io.use(async (socket: any, next: Function) => {
 
 // Socket.io
 io.on("connection", (socket: any) => {
-	console.log("User connected:", socket.id);
+	logger.info(socket.id, "<<-- User connected");
 	MessagesServices(socket, io);
 });
 

@@ -8,6 +8,7 @@ import logger from "../../logger";
 import path from "path";
 import { convertHtmlToHbs } from "../utils/utils";
 import { UserProjection } from "../utils/Projections/UserProjection";
+import RoomModel from "../models/RoomModel";
 
 const JWT_SECRET = envConfig.jwtSecret;
 const SALT_ROUNDS = 10;
@@ -36,8 +37,9 @@ export default {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const userExists = await checkUserExists({
-					email: userData.email,
+					email: userData?.email,
 				});
+				logger.info(userExists, "<<-- userExists");
 				if (userExists) {
 					return reject(ERRORS.USER_ALREADY_EXISTS);
 				}
@@ -49,27 +51,36 @@ export default {
 				const user = new UserModel({
 					email: userData.email,
 					name: userData.name,
+					userName: userData.email.split("@")[0],
 					password: hashedPassword,
 				});
 
 				const newUser = await user.save();
 
+				if (newUser) {
+					// Create a new room with username
+					const room = await RoomModel.create({
+						name: user.userName,
+					});
+				}
+
 				const emailTemplate = await convertHtmlToHbs({
 					templateName: "registration-successful",
 					data: {
-						name: "Sukanta Majhi",
+						name: newUser.name,
 					},
 				});
 
 				await sendMail({
-					to: user.email,
+					to: newUser.email,
 					subject: "Welcome Aboard! Your Talkify Account is Ready",
-					html: emailTemplate,
+					html: emailTemplate as string,
 				});
 
 				return resolve({
 					name: newUser.name,
 					email: newUser.email,
+					userName: newUser.userName,
 					profilePicture: newUser.profilePicture,
 					lastLogin: newUser.lastLogin,
 					loginToken: newUser.loginToken,
@@ -80,7 +91,12 @@ export default {
 			}
 		});
 	},
-	login: async (userData: IUser): Promise<string> => {
+	login: async (
+		userData: IUser
+	): Promise<{
+		token: string;
+		name: string;
+	}> => {
 		return new Promise(async (resolve, reject) => {
 			try {
 				const user = await checkUserExists({ email: userData.email });
@@ -107,7 +123,7 @@ export default {
 				user.loginToken = token;
 				await user.save();
 
-				return resolve(token);
+				return resolve({ token, name: user.name });
 			} catch (error: any) {
 				return reject(error.message);
 			}
@@ -132,7 +148,7 @@ export default {
 				await sendMail({
 					to: email,
 					subject: "Reset your password",
-					html: emailTemplate,
+					html: emailTemplate as string,
 				});
 
 				return resolve("Email sent successfully");

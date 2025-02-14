@@ -1,3 +1,4 @@
+import logger from "../../logger";
 import RoomModel, { IRoom } from "../models/RoomModel";
 import { ERRORS } from "../utils/messages";
 
@@ -41,6 +42,25 @@ export default {
 				}
 				return resolve(room);
 			} catch (error: any) {
+				return reject(ERRORS.INTERNAL_SERVER_ERROR);
+			}
+		});
+	},
+	getRoomByName: (roomName: string) => {
+		return new Promise(async (resolve, reject) => {
+			try {
+				logger.info(roomName, "<<-- roomName");
+				const room = await RoomModel.findOne({
+					name: roomName,
+					isActive: true,
+				});
+				console.log(room, "<<-- room info");
+				if (!room) {
+					return reject(ERRORS.ROOM_NOT_FOUND);
+				}
+				return resolve(room);
+			} catch (error: any) {
+				logger.error(error, "<<-- Error in getting room by name");
 				return reject(ERRORS.INTERNAL_SERVER_ERROR);
 			}
 		});

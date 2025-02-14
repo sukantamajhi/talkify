@@ -9,24 +9,47 @@ export function isDev() {
 	return process.env.NODE_ENV === "development";
 }
 
-export function setCookey(key: string, value: string, days: number) {
-	const date = new Date();
-	date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-	document.cookie = `${key}=${value};expires=${date.toUTCString()};path=/`;
-}
+// export function generateToken(
+// 	payload: genTokenPayload,
+// 	secret: string
+// ): string {
+// 	try {
+// 		const stringPayload =
+// 			typeof payload === "string" ? payload : JSON.stringify(payload);
+// 		return CryptoJS.AES.encrypt(stringPayload, secret).toString();
+// 	} catch (error) {
+// 		logger.error(error, "Error in generateToken");
+// 		throw error;
+// 	}
+// }
 
-export function getCookey(key: string) {
-	const name = `${key}=`;
-	const decodedCookie = decodeURIComponent(document.cookie);
-	const ca = decodedCookie.split(";");
-	for (let i = 0; i < ca.length; i++) {
-		let c = ca[i];
-		while (c.charAt(0) === " ") {
-			c = c.substring(1);
-		}
-		if (c.indexOf(name) === 0) {
-			return c.substring(name.length, c.length);
-		}
+// export function decodeToken(token: string, secret: string): tokenData {
+// 	try {
+// 		const bytes = CryptoJS.AES.decrypt(token, secret);
+// 		return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+// 	} catch (error) {
+// 		logger.error(error, "Error in decodeToken");
+// 		throw error;
+// 	}
+// }
+
+export const setLocalStorageValue = (key: string, value: any) => {
+	if (typeof window === "undefined") return null;
+
+	if (typeof value !== "string") {
+		localStorage.setItem(key, JSON.stringify(value));
+	} else {
+		localStorage.setItem(key, value);
 	}
-	return "";
+};
+
+export function getLocalStorageValue(key: string): any {
+	// if (typeof window === "undefined") return null;
+	const data = localStorage.getItem(key);
+	if (!data) return null;
+	try {
+		return JSON.parse(data);
+	} catch {
+		return data;
+	}
 }

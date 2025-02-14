@@ -14,33 +14,30 @@ interface Message {
 }
 
 function ChatArea({ roomId, socket }: { roomId: string; socket: any }) {
-	const [messages, setMessages] = useState<Message[]>([
-		{ id: 1, content: `Welcome to room of ${roomId}!`, sender: "System" },
-	]);
+	const [messages, setMessages] = useState<any[]>([]);
 	const [newMessage, setNewMessage] = useState("");
 	const scrollRef: any = useRef(null);
+	const [username, setUsername] = useState<string>("");
 
 	useEffect(() => {
-		if (!socket) return;
+		const username = localStorage.getItem("username");
+		if (username) {
+			setUsername(username);
+		}
+	}, []);
 
-		// Listen for when the socket connects
-		socket?.on("connect", () => {
-			console.log("Socket connected, ID:", socket.id);
-		});
+	useEffect(() => {
+		socket.emit("joinRoom", { room: roomId, username });
 
-		socket.on("sendMessage", (data: any) => {
+		socket.on("message", (data: any) => {
 			console.log(data, "<<-- data");
 			setMessages((prev) => [...prev, data]);
 		});
 
 		return () => {
 			socket.off("message");
-			// Listen for when the socket disconnects
-			socket.on("disconnect", () => {
-				console.log("Socket disconnected.");
-			});
 		};
-	}, [socket]);
+	}, [roomId]);
 
 	// Scroll to the bottom when messages update
 	useEffect(() => {
@@ -52,18 +49,17 @@ function ChatArea({ roomId, socket }: { roomId: string; socket: any }) {
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (newMessage.trim()) {
-			setMessages([
-				...messages,
-				{
-					id: messages.length + 1,
-					content: newMessage,
-					sender: "user",
-				},
-			]);
-			socket?.emit("sendMessage", {
+			const messageData = {
 				content: newMessage,
-				sender: "user",
-			});
+				sender: username,
+				room: roomId,
+			};
+
+			console.log("Sending message:", messageData); // Debug log
+
+			socket.emit("sendMessage", messageData); // Emit message to backend
+
+			// setMessages((prev) => [...prev, messageData]); // Add message locally
 			setNewMessage("");
 		}
 	};
@@ -92,9 +88,9 @@ function ChatArea({ roomId, socket }: { roomId: string; socket: any }) {
 					ref={scrollRef} // Attach the ref to the scroll container
 					className='h-full pr-4 overflow-y-auto' // Make sure there's overflow and scroll
 				>
-					{messages.map((message) => (
+					{messages.map((message, index) => (
 						<div
-							key={message.id}
+							key={index}
 							className={`mb-4 flex ${
 								message.sender === "user"
 									? "justify-end"

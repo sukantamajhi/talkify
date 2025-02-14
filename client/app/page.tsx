@@ -17,6 +17,7 @@ import { MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { setLocalStorageValue } from "@/lib/utils";
 
 export default function AuthPage() {
 	const { toast } = useToast();
@@ -50,7 +51,8 @@ export default function AuthPage() {
 
 				if (response.data.token) {
 					// save token to cookie
-					document.cookie = `token=${response.data.token}; path=/; max-age=86400`;
+					setLocalStorageValue("token", response.data.token);
+					localStorage.setItem("username", response.data.data.name);
 					// navigate to chat
 					router.push("/chat");
 				}
@@ -138,12 +140,12 @@ export default function AuthPage() {
 					</form>
 				</CardContent>
 				<CardFooter className='flex flex-col items-center'>
-					<div className='mb-4'>
+					{/* <div className='mb-4'>
 						<Button variant='outline' className='mr-2'>
 							Google
 						</Button>
 						<Button variant='outline'>Facebook</Button>
-					</div>
+					</div> */}
 					<Button variant='link' onClick={() => setIsLogin(!isLogin)}>
 						{isLogin
 							? "Don't have an account? Sign Up"

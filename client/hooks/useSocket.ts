@@ -1,4 +1,4 @@
-import { getCookey } from "@/lib/utils";
+import { getLocalStorageValue } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -10,7 +10,7 @@ export const useSocket = () => {
 		const newSocket = io(SOCKET_URL, {
 			reconnectionDelayMax: 10000,
 			auth: {
-				token: getCookey("token"),
+				token: getLocalStorageValue("token"),
 			},
 		});
 		setSocket(newSocket);

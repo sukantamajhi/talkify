@@ -56,6 +56,24 @@ export default {
 			next(error);
 		}
 	},
+
+	getRoomByName: async (
+		req: Request,
+		res: Response,
+		next: Function
+	): Promise<any> => {
+		try {
+			const room = await RoomServices.getRoomByName(req.params.roomname);
+			return res.status(200).json({
+				error: false,
+				code: "ROOM_FETCHED",
+				message: RoomMessages.ROOM_FETCHED,
+				data: room,
+			});
+		} catch (error: any) {
+			next(error);
+		}
+	},
 	updateRoom: async (
 		req: Request,
 		res: Response,

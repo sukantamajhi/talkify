@@ -71,6 +71,36 @@ body {
 	}
 }
 
+/* Style the scrollbar container */
+::-webkit-scrollbar {
+	width: 8px; /* Scrollbar width */
+	height: 8px; /* Horizontal scrollbar height */
+}
+
+/* Style the track (background) */
+::-webkit-scrollbar-track {
+	background: #f1f1f1; /* Light grey background */
+	border-radius: 10px;
+}
+
+/* Style the thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+	background: #888; /* Dark grey */
+	border-radius: 10px;
+	border: 2px solid #f1f1f1; /* Border to make thumb stand out */
+}
+
+/* Hover effect for the thumb */
+::-webkit-scrollbar-thumb:hover {
+	background: #555; /* Darker grey when hovered */
+	width: 15px;
+}
+
+/* Optional: Style the horizontal scrollbar if needed */
+::-webkit-scrollbar-horizontal {
+	height: 8px;
+}
+
 .room-area {
 	box-sizing: border-box;
 	height: calc(100vh - 64px) !important;
