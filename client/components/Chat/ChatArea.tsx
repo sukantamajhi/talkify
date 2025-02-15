@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Avatar } from "@radix-ui/react-avatar";
-import { AvatarFallback, AvatarImage } from "../ui/avatar";
+import { AvatarFallback } from "../ui/avatar";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Send, History } from "lucide-react";
+import { isClient } from "@/lib/utils";
+import { IMessage, IRoomDetails } from "@/global";
 
 function ChatArea({
 	room,
@@ -13,10 +15,11 @@ function ChatArea({
 	room: IRoomDetails | null;
 	socket: any;
 }) {
-	const [messages, setMessages] = useState<any[]>([]);
+	const [messages, setMessages] = useState<IMessage[]>([]);
 	const [newMessage, setNewMessage] = useState("");
 	const scrollRef: any = useRef(null);
 	const [username, setUsername] = useState<string>("");
+	const userId = isClient && localStorage.getItem("userId");
 
 	useEffect(() => {
 		const username = localStorage.getItem("username");
@@ -123,13 +126,13 @@ function ChatArea({
 						<div
 							key={message?._id}
 							className={`mb-4 flex ${
-								message.sender?.name === username
+								message.sender?._id === userId
 									? "justify-end"
 									: "justify-start"
 							}`}>
 							<div
 								className={`flex flex-col ${
-									message.sender?.name === username
+									message.sender?._id === userId
 										? "items-end"
 										: "items-start"
 								} w-full`}>
@@ -150,8 +153,7 @@ function ChatArea({
 										)}
 										<div
 											className={`max-w-[75%] px-5 py-3 rounded-2xl shadow-lg transition-transform duration-200 ease-in-out transform ${
-												message.sender?.name ===
-												username
+												message.sender?._id === userId
 													? "bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
 													: "bg-gradient-to-r from-gray-200 to-gray-400 text-gray-800 hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
 											} animate__animated animate__fadeIn`}>

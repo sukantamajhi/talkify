@@ -53,3 +53,19 @@ export function getLocalStorageValue(key: string): any {
 		return data;
 	}
 }
+
+export const isClient = typeof window !== "undefined";
+
+export function getInitials(fullName: string) {
+	const nameParts = fullName.split(" ");
+
+	// If the full name has both first and surname
+	if (nameParts.length >= 2) {
+		const firstNameInitial = nameParts[0][0]?.toUpperCase(); // First letter of the first name
+		const surnameInitial = nameParts[1][0]?.toUpperCase(); // First letter of the surname
+		return firstNameInitial + surnameInitial;
+	}
+
+	// In case there's only one part (e.g., single name)
+	return nameParts[0][0]?.toUpperCase();
+}

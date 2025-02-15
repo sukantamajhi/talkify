@@ -54,6 +54,7 @@ export default function AuthPage() {
 				if (response.data.token) {
 					// save token to cookie
 					setLocalStorageValue("token", response.data.token);
+					setLocalStorageValue("userId", response.data.data.id);
 					localStorage.setItem("username", response.data.data.name);
 					localStorage.setItem(
 						"selfRoomId",

@@ -1,21 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import ChatArea from "@/components/Chat/ChatArea";
 import RoomJoin from "@/components/Chat/RoomJoin";
 import { useSocket } from "@/hooks/useSocket";
 import axios from "@/lib/axios";
-import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
+import Header from "@/components/Header";
+import { IRoomDetails } from "@/global";
 
 export default function ChatPage() {
 	const socket = useSocket();
 	const router = useRouter();
 	const { toast } = useToast();
+	const ownRoomId =
+		typeof window !== "undefined" && localStorage.getItem("selfRoomId");
 
 	const [room, setRoom] = useState<IRoomDetails | null>(null);
 	const [joinedRoom, setJoinedRoom] = useState<string | null>(null);
@@ -46,6 +47,7 @@ export default function ChatPage() {
 			const roomData: IRoomDetails = response.data.data;
 			setRoom(roomData);
 			setJoinedRoom(roomData._id);
+			setShowJoinRoom(roomData?.name === ownRoomId ? "OWN" : "OTHER");
 			localStorage.setItem("room", JSON.stringify(roomData));
 			socket?.emit("joinRoom", { roomId: roomData._id, username });
 		} catch (error: any) {
@@ -62,7 +64,7 @@ export default function ChatPage() {
 	// Toggle between "Own Room" and "Other Room"
 	const handleChatRoomToggle = async () => {
 		setShowJoinRoom((prev) => (prev === "OWN" ? "OTHER" : "OWN"));
-
+		socket?.emit("switchRoom", { roomId: room._id, username });
 		if (showJoinRoom === "OTHER") {
 			const ownRoomId = localStorage.getItem("selfRoomId");
 			if (!ownRoomId) return;
@@ -92,49 +94,21 @@ export default function ChatPage() {
 		router.replace("/");
 	};
 
-	// Leave current room
-	const joinAnotherRoom = () => {
-		setJoinedRoom(null);
-		setRoom(null);
-		localStorage.removeItem("room");
-	};
-
 	return (
 		<>
 			{/* Header Section */}
-			<header className='w-full h-16 sticky top-0 flex justify-between items-center p-4 bg-white shadow-lg rounded-lg'>
-				<Link
-					href='/'
-					className='flex items-center hover:text-blue-600 transition-all duration-300'>
-					<MessageCircle className='w-8 h-8 text-black mr-2' />
-					<h1 className='text-3xl font-bold text-black'>Talkify</h1>
-				</Link>
-
-				<div className='flex items-center space-x-4'>
-					<Button
-						onClick={handleChatRoomToggle}
-						className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300'>
-						{showJoinRoom === "OWN"
-							? "Join Other Chat Room"
-							: "Join Own Chat Room"}
-					</Button>
-
-					<Button
-						onClick={handleLogout}
-						className='px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300'>
-						Logout
-					</Button>
-				</div>
-			</header>
+			<Header
+				userName={username}
+				handleChatRoomToggle={handleChatRoomToggle}
+				showJoinRoom={showJoinRoom}
+				ownRoomId={ownRoomId}
+				handleLogout={handleLogout}
+			/>
 
 			{/* Main Content Area */}
 			<div className='flex flex-col items-center justify-center bg-gray-100 p-4 room-area'>
 				{joinedRoom && room?._id ? (
-					<ChatArea
-						room={room}
-						joinAnotherRoom={joinAnotherRoom}
-						socket={socket}
-					/>
+					<ChatArea room={room} socket={socket} />
 				) : (
 					<RoomJoin onJoin={handleJoinRoom} />
 				)}

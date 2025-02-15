@@ -94,6 +94,7 @@ export default {
 	login: async (
 		userData: IUser
 	): Promise<{
+		id: string;
 		token: string;
 		name: string;
 		userName: string;
@@ -126,6 +127,7 @@ export default {
 
 				return resolve({
 					token,
+					id: user._id as string,
 					name: user.name,
 					userName: user.userName,
 				});
