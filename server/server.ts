@@ -16,7 +16,7 @@ app.use(cors());
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
 	cors: {
-		origin: "http://localhost:3000", // Allow requests from your client URL
+		origin: ["http://localhost:3000", "https://talkify-kappa.vercel.app"], // Allow requests from your client URL
 		methods: ["GET", "POST"],
 		allowedHeaders: ["Content-Type"],
 		credentials: true,
