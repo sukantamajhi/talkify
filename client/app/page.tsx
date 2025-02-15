@@ -38,6 +38,11 @@ export default function AuthPage() {
 		try {
 			setLoading(true);
 			if (!isLogin) {
+				await axios.post("/auth/register", {
+					name,
+					email,
+					password,
+				});
 				setIsLogin(true);
 			} else {
 				const response = await axios.post("/auth/login", {
