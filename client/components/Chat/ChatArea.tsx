@@ -4,16 +4,14 @@ import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Send } from "lucide-react";
+import { Send, History } from "lucide-react";
 
 function ChatArea({
 	room,
 	socket,
-	joinAnotherRoom,
 }: {
 	room: IRoomDetails | null;
 	socket: any;
-	joinAnotherRoom: () => void;
 }) {
 	const [messages, setMessages] = useState<any[]>([]);
 	const [newMessage, setNewMessage] = useState("");
@@ -31,7 +29,6 @@ function ChatArea({
 		socket.emit("joinRoom", { room: room?._id, username });
 
 		socket.on("message", (data: any) => {
-			console.log(data, "<<-- data");
 			setMessages((prev) => [...prev, data]);
 		});
 
@@ -40,47 +37,67 @@ function ChatArea({
 		};
 	}, [room, socket, username]);
 
-	// Scroll to the bottom when messages update
+	useEffect(() => {
+		if (room?._id) {
+			localStorage.setItem("room", JSON.stringify(room));
+		}
+	}, [room]);
+
 	useEffect(() => {
 		if (scrollRef.current) {
 			scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
 		}
-	}, [messages]); // Trigger effect when messages change
+	}, [messages]);
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault();
 		if (newMessage.trim()) {
 			const messageData = {
 				message: newMessage,
-				sender: username,
+				// sender: username,
 				roomId: room?._id,
 			};
 
-			console.log("Sending message:", messageData); // Debug log
-
-			socket.emit("sendMessage", messageData); // Emit message to backend
-
-			// setMessages((prev) => [...prev, messageData]); // Add message locally
+			socket.emit("sendMessage", messageData);
+			// setMessages([...messages, messageData]);
 			setNewMessage("");
 		}
 	};
 
-	const handleJoinAnotherRoom = () => {
-		joinAnotherRoom();
+	const handleShowHistory = () => {
+		socket.emit("getLastMessages", { roomId: room?._id, limit: 50 });
+
+		socket.on("lastMessages", (data: any[]) => {
+			console.log(data, "<<-- data");
+
+			// Create a Set to track unique _id values
+			const seenIds = new Set();
+
+			// Combine the new messages with the existing ones
+			const combinedMessages = [...data, ...messages];
+
+			// Filter out duplicates based on _id
+			const uniqueMessages = combinedMessages.filter((message) => {
+				if (seenIds.has(message._id)) {
+					return false; // Skip duplicate messages
+				} else {
+					seenIds.add(message._id); // Add the _id to the set
+					return true; // Keep unique messages
+				}
+			});
+
+			// Update the state with the unique messages
+			setMessages(uniqueMessages);
+		});
 	};
 
 	return (
-		<Card className='w-full max-w-2xl h-[80vh] flex flex-col bg-white shadow-xl rounded-3xl overflow-hidden transition-all duration-300'>
-			{/* Header */}
-			<CardHeader className='flex items-center justify-between pb-4 bg-indigo-600 p-6 rounded-t-3xl text-white'>
+		<Card className='w-full max-w-2xl h-[80vh] flex flex-col bg-white shadow-xl rounded-3xl overflow-hidden'>
+			<CardHeader className='flex items-center justify-between bg-indigo-600 p-6 rounded-t-3xl text-white'>
 				<div className='flex items-center space-x-4'>
 					{/* Avatar Section */}
 					<Avatar className='w-16 h-16 border-2 border-white transition-transform transform hover:scale-110'>
-						<AvatarImage
-							src='https://avatars.dicebear.com/api/avataaars/john-doe.svg'
-							alt='User avatar'
-						/>
-						<AvatarFallback>JD</AvatarFallback>
+						<AvatarFallback className='bg-blue-600 text-white text-2xl uppercase'>{`${room.name[0]}${room.name[1]}`}</AvatarFallback>
 					</Avatar>
 
 					{/* Text Section */}
@@ -93,50 +110,50 @@ function ChatArea({
 						</p>
 					</div>
 				</div>
-
-				{/* Button Section */}
 				<Button
-					onClick={handleJoinAnotherRoom}
-					className='px-6 py-2 rounded-lg text-white bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transform hover:scale-105 hover:shadow-xl transition-all duration-300'>
-					Switch to Another Room
+					onClick={handleShowHistory}
+					className='bg-green-500 hover:bg-green-600 text-black px-6 py-2 rounded-lg flex items-center'>
+					<History className='mr-2' /> Show History
 				</Button>
 			</CardHeader>
 
-			{/* Chat Messages */}
 			<CardContent className='flex-grow overflow-hidden p-6 bg-gray-50'>
-				<div
-					ref={scrollRef}
-					className='h-full pr-4 overflow-y-auto p-4 transition-all duration-300'>
-					{messages.map((message, index) => (
+				<div ref={scrollRef} className='h-full overflow-y-auto p-4'>
+					{messages.map((message) => (
 						<div
-							key={index}
+							key={message?._id}
 							className={`mb-4 flex ${
-								message.sender === username
+								message.sender?.name === username
 									? "justify-end"
 									: "justify-start"
 							}`}>
 							<div
 								className={`flex flex-col ${
-									message.sender === username
+									message.sender?.name === username
 										? "items-end"
 										: "items-start"
 								} w-full`}>
 								{/* System Message Styling */}
-								{message.sender === "system" ? (
-									<div className='w-full bg-gray-200 text-blue-800 p-3 rounded-lg shadow-md text-center font-semibold text-sm'>
-										<span className='italic'>[System]</span>{" "}
+								{message.sender?.name === "Talkify" ? (
+									<div className='w-full bg-gradient-to-r from-blue-100 to-blue-300 text-blue-900 p-3 rounded-lg shadow-lg text-center font-medium text-base transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-xl flex items-center justify-center'>
+										<span className='italic text-lg font-semibold mr-2'>
+											[Talkify]
+										</span>
 										{message.message}
 									</div>
 								) : (
 									<>
-										<div className='text-sm font-semibold text-gray-600'>
-											{message.sender}
-										</div>
+										{message.sender?.name !== username && (
+											<div className='text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>
+												{message.sender?.name}
+											</div>
+										)}
 										<div
-											className={`max-w-[70%] px-4 py-2 rounded-xl shadow-md transition-all duration-300 ease-in-out transform ${
-												message.sender === username
-													? "bg-gradient-to-r from-blue-400 to-blue-600 text-white hover:scale-105 hover:shadow-lg hover:translate-x-1 hover:translate-y-1"
-													: "bg-gradient-to-r from-gray-100 to-gray-300 text-gray-800 hover:scale-105 hover:shadow-lg hover:translate-x-1 hover:translate-y-1"
+											className={`max-w-[75%] px-5 py-3 rounded-2xl shadow-lg transition-transform duration-200 ease-in-out transform ${
+												message.sender?.name ===
+												username
+													? "bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
+													: "bg-gradient-to-r from-gray-200 to-gray-400 text-gray-800 hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
 											} animate__animated animate__fadeIn`}>
 											{message.message}
 										</div>
@@ -148,7 +165,6 @@ function ChatArea({
 				</div>
 			</CardContent>
 
-			{/* Footer (Message Input and Send Button) */}
 			<CardFooter className='bg-gray-800 p-4 rounded-b-3xl'>
 				<form
 					onSubmit={handleSendMessage}
@@ -157,13 +173,13 @@ function ChatArea({
 						value={newMessage}
 						onChange={(e) => setNewMessage(e.target.value)}
 						placeholder='Type your message...'
-						className='flex-grow p-3 rounded-xl text-gray-700 bg-white border-2 border-gray-300 focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out'
+						className='flex-grow p-3 rounded-xl bg-white border-2'
+						autoFocus
 					/>
 					<Button
 						type='submit'
-						className='bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transform transition-all duration-200'>
+						className='bg-indigo-600 text-white px-6 py-3 rounded-xl'>
 						<Send className='h-5 w-5' />
-						<span className='sr-only'>Send</span>
 					</Button>
 				</form>
 			</CardFooter>
