@@ -20,31 +20,6 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 				message: `${socket.user.name} has joined the chat.`,
 				roomId: data.roomId,
 			});
-
-			// Fetch the last 20 messages when the user joins the room
-			try {
-				const messages = await MessagesModel.find({
-					roomId: data.roomId,
-				})
-					.sort({ createdAt: -1 })
-					.limit(20) // Limit to last 20 messages
-					.lean();
-
-				console.log(messages, "<<-- last 20 messages");
-
-				// Format messages to return the necessary data
-				const formattedMessages = messages.map((msg) => ({
-					_id: msg._id,
-					sender: msg.sender,
-					roomId: msg.roomId,
-					message: msg.message,
-				}));
-
-				// Emit the last 20 messages to the user who just joined
-				socket.emit("lastMessages", formattedMessages.reverse()); // Reverse to display from oldest to newest
-			} catch (error) {
-				logger.error("Error fetching last 20 messages: ", error);
-			}
 		}
 	});
 
@@ -69,17 +44,19 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 			message: data.message,
 		};
 
+		logger.info({ constructedMessage, data }, "<<-- data.room");
+
 		io.to(data.room).emit("message", constructedMessage);
 	});
 
 	socket.on("getLastMessages", async (data) => {
+		console.log(data, "<<-- getLastMessages");
 		try {
 			const messages = await MessagesModel.find({ roomId: data.roomId })
 				.sort({ createdAt: -1 })
 				.limit(data.limit || 50)
 				.lean();
 
-			console.log(messages, "<<-- messages");
 			const formattedMessages = messages.map((msg: any) => ({
 				_id: msg._id,
 				sender: msg.sender,

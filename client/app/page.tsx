@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -17,12 +17,17 @@ import { EyeIcon, EyeOffIcon, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import { setLocalStorageValue } from "@/lib/utils";
+import {
+	getLocalStorageValue,
+	isClient,
+	setLocalStorageValue,
+} from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function AuthPage() {
 	const { toast } = useToast();
 	const router = useRouter();
+	const token = isClient && getLocalStorageValue("token");
 
 	const [isLogin, setIsLogin] = useState(true);
 	const [loading, setLoading] = useState(false);
@@ -31,6 +36,12 @@ export default function AuthPage() {
 	const [password, setPassword] = useState("");
 	const [rememberMe, setRememberMe] = useState(false);
 	const [passwordVisible, setPasswordVisible] = useState(false); // Password visibility toggle state
+
+	useEffect(() => {
+		if (token) {
+			router.push("/chat");
+		}
+	}, [router, token]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();

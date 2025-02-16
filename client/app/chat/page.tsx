@@ -33,6 +33,9 @@ export default function ChatPage() {
 			const parsedRoom = JSON.parse(storedRoom);
 			setRoom(parsedRoom);
 			setJoinedRoom(parsedRoom._id);
+			// Update the UI based on whether it's the "own room" or not
+			const ownRoomId = localStorage.getItem("selfRoomId");
+			setShowJoinRoom(room?.name === ownRoomId ? "OWN" : "OTHER");
 			socket?.emit("joinRoom", {
 				roomId: parsedRoom._id,
 				username: storedUsername,
@@ -43,14 +46,25 @@ export default function ChatPage() {
 	// Function to join a new chat room
 	const handleJoinRoom = async (roomId: string) => {
 		try {
+			// Fetch room details using roomId
 			const response = await axios.get(`/rooms/room-name/${roomId}`);
 			const roomData: IRoomDetails = response.data.data;
+
+			// Update the state with the room details and joined room id
 			setRoom(roomData);
 			setJoinedRoom(roomData._id);
+
+			// Update the UI based on whether it's the "own room" or not
+			const ownRoomId = localStorage.getItem("selfRoomId");
 			setShowJoinRoom(roomData?.name === ownRoomId ? "OWN" : "OTHER");
+
+			// Store room details in localStorage for persistence
 			localStorage.setItem("room", JSON.stringify(roomData));
+
+			// Emit socket event to join the room
 			socket?.emit("joinRoom", { roomId: roomData._id, username });
 		} catch (error: any) {
+			// Handle errors and show a toast message
 			console.error(error, "<<-- Error in getting room details");
 			toast({
 				variant: "destructive",
@@ -63,28 +77,41 @@ export default function ChatPage() {
 
 	// Toggle between "Own Room" and "Other Room"
 	const handleChatRoomToggle = async () => {
+		// Toggle the current room view between OWN and OTHER
 		setShowJoinRoom((prev) => (prev === "OWN" ? "OTHER" : "OWN"));
-		socket?.emit("switchRoom", { roomId: room._id, username });
+
+		// If switching to the "OWN" room, attempt to join the user's own room
 		if (showJoinRoom === "OTHER") {
 			const ownRoomId = localStorage.getItem("selfRoomId");
 			if (!ownRoomId) return;
 
 			try {
+				// Fetch the own room details
 				const response = await axios.get(
 					`/rooms/room-name/${ownRoomId}`
 				);
 				const roomData: IRoomDetails = response.data.data;
+
+				// Update state with the room data and joined room id
 				setRoom(roomData);
 				setJoinedRoom(roomData._id);
+
+				// Store room details in localStorage for persistence
 				localStorage.setItem("room", JSON.stringify(roomData));
+
+				// Emit socket event to join the room
 				socket?.emit("joinRoom", { roomId: roomData._id, username });
 			} catch (error) {
 				console.error(error);
 			}
 		} else {
+			// If switching to "OTHER" room, clear the current room data
 			setJoinedRoom(null);
 			setRoom(null);
 			localStorage.removeItem("room");
+
+			// Emit socket event to leave the current room
+			socket?.off("message");
 		}
 	};
 
@@ -92,6 +119,7 @@ export default function ChatPage() {
 	const handleLogout = () => {
 		localStorage.clear();
 		router.replace("/");
+		socket.off("message");
 	};
 
 	return (

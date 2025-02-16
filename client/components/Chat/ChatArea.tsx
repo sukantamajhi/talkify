@@ -4,7 +4,7 @@ import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback } from "../ui/avatar";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Send, History } from "lucide-react";
+import { Send } from "lucide-react";
 import { isClient } from "@/lib/utils";
 import { IMessage, IRoomDetails } from "@/global";
 
@@ -31,12 +31,39 @@ function ChatArea({
 	useEffect(() => {
 		socket.emit("joinRoom", { room: room?._id, username });
 
+		socket.emit("getLastMessages", { roomId: room?._id, limit: 50 });
+
 		socket.on("message", (data: any) => {
-			setMessages((prev) => [...prev, data]);
+			console.log(data, "<<-- Message received");
+			if (data.roomId === room._id)
+				setMessages((prev) => [...prev, data]);
+		});
+
+		socket.on("lastMessages", (data: IMessage[]) => {
+			setMessages([]);
+
+			// Create a Set to track unique _id values
+			const seenIds = new Set();
+
+			// Combine the new messages with the existing ones
+
+			// Filter out duplicates based on _id
+			const uniqueMessages = data.filter((message) => {
+				if (seenIds.has(message._id)) {
+					return false; // Skip duplicate messages
+				} else {
+					seenIds.add(message._id); // Add the _id to the set
+					return true; // Keep unique messages
+				}
+			});
+
+			// Update the state with the unique messages
+			setMessages(uniqueMessages);
 		});
 
 		return () => {
 			socket.off("message");
+			socket.off("lastMessages");
 		};
 	}, [room, socket, username]);
 
@@ -62,36 +89,8 @@ function ChatArea({
 			};
 
 			socket.emit("sendMessage", messageData);
-			// setMessages([...messages, messageData]);
 			setNewMessage("");
 		}
-	};
-
-	const handleShowHistory = () => {
-		socket.emit("getLastMessages", { roomId: room?._id, limit: 50 });
-
-		socket.on("lastMessages", (data: any[]) => {
-			console.log(data, "<<-- data");
-
-			// Create a Set to track unique _id values
-			const seenIds = new Set();
-
-			// Combine the new messages with the existing ones
-			const combinedMessages = [...data, ...messages];
-
-			// Filter out duplicates based on _id
-			const uniqueMessages = combinedMessages.filter((message) => {
-				if (seenIds.has(message._id)) {
-					return false; // Skip duplicate messages
-				} else {
-					seenIds.add(message._id); // Add the _id to the set
-					return true; // Keep unique messages
-				}
-			});
-
-			// Update the state with the unique messages
-			setMessages(uniqueMessages);
-		});
 	};
 
 	return (
@@ -113,11 +112,6 @@ function ChatArea({
 						</p>
 					</div>
 				</div>
-				<Button
-					onClick={handleShowHistory}
-					className='bg-green-500 hover:bg-green-600 text-black px-6 py-2 rounded-lg flex items-center'>
-					<History className='mr-2' /> Show History
-				</Button>
 			</CardHeader>
 
 			<CardContent className='flex-grow overflow-hidden p-6 bg-gray-50'>
