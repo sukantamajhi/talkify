@@ -239,7 +239,6 @@ export default function DashboardPage() {
 
 	const fetchUserDetails = async () => {
 		const user = await axios.get("/users");
-		console.log(user.data, "<<-- user");
 		setUserProfile(user.data.data);
 	};
 
