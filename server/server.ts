@@ -7,6 +7,9 @@ import errorHandler from "./src/middleware/ErrorMiddleware";
 import cors from "cors";
 import MessagesServices from "./src/services/MessagesServices";
 import UserModel from "./src/models/UserModel";
+import ClerkService from "./src/services/ClerkService";
+import { SessionModel } from "./src/models/SessionModel";
+import { basicProfileProjection } from "./src/utils/Projections/UserProjection";
 
 const app = express();
 
@@ -46,23 +49,29 @@ app.use(errorHandler);
 
 // Middleware to authenticate the socket connection
 io.use(async (socket: any, next: Function) => {
-	const token =
-		(socket.handshake.auth.token as string) ||
-		(socket.handshake.headers.token as string);
+	console.log(socket.handshake, "<<-- socket.handshake");
+	const sessionId =
+		(socket.handshake.auth.sessionId as string) ||
+		(socket.handshake.headers.sessionId as string);
 
-	if (!token) {
+	if (!sessionId) {
 		logger.error("❌ Authentication failed");
 		next(new Error("Authentication error"));
 	} else {
-		const user = await UserModel.findOne({
-			loginToken: token,
-			isActive: true,
+		const session = await SessionModel.findOne({
+			id: socket.handshake.auth.sessionId,
+			status: "active",
 		});
-		if (!user) {
+		if (!session) {
 			logger.error("❌ Authentication failed");
 			next(new Error("Authentication error"));
 		} else {
 			logger.info("✅ Authentication successful");
+
+			const user = await UserModel.findOne(
+				{ id: session.user_id },
+				basicProfileProjection
+			);
 
 			socket.user = user; // Attach user details to socket
 
@@ -75,6 +84,30 @@ io.use(async (socket: any, next: Function) => {
 io.on("connection", (socket: any) => {
 	logger.info(socket.id, "<<-- User connected");
 	MessagesServices(socket, io);
+});
+
+// Webhook endpoint to receive Clerk events
+app.post("/webhooks/clerk", (req, res) => {
+	const event = req.body;
+
+	// Log the event data
+	// console.log("Received Clerk webhook event:", event);
+
+	// Handle specific event (e.g., user created)
+	if (event.type === "user.created") {
+		// Process user creation event
+		// console.log("New user created:", event.data);
+		ClerkService.createUserFromClerk(event.data);
+	}
+
+	if (event.type === "session.created") {
+		// Process session creation event
+		// console.log("New session created:", event.data);
+		ClerkService.createUserSession(event.data);
+	}
+
+	// Send a 200 response to acknowledge receipt of the event
+	res.status(200).send("Webhook received");
 });
 
 // Start server

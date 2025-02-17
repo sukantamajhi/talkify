@@ -7,9 +7,8 @@ const axios = Axios.create({
 		"Content-Type": "application/json",
 	},
 });
-
 axios.interceptors.request.use(
-	(config) => {
+	async (config) => {
 		// Modify request before sending
 		// You can add auth tokens here if needed
 		const token = localStorage.getItem("token");

@@ -1,10 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { UserProjection } from "../utils/Projections/UserProjection";
-import { IUser } from "./UserModel";
+import { IClerkUser } from "../utils/types";
+import { basicProfileProjection } from "../utils/Projections/UserProjection";
 
 export interface IMessage extends Document {
 	_id: string;
-	sender: IUser;
+	sender: IClerkUser;
 	roomId: string;
 	message: string;
 }
@@ -21,12 +21,12 @@ const MessageSchema: Schema = new Schema(
 );
 
 MessageSchema.pre("find", function (next) {
-	this.populate("sender");
+	this.populate("sender", basicProfileProjection);
 	next();
 });
 
 MessageSchema.pre("findOne", function (next) {
-	this.populate("sender");
+	this.populate("sender", basicProfileProjection);
 	next();
 });
 

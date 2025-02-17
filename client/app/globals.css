@@ -105,3 +105,8 @@ body {
 	box-sizing: border-box;
 	height: calc(100vh - 64px) !important;
 }
+
+.cl-footer > div:nth-child(2) {
+	/* your styles here */
+	display: none !important;
+}

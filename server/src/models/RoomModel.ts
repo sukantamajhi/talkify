@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IRoom extends Document {
 	name: string;
-	description: string;
+	description?: string;
 	isActive: boolean;
 	createdAt: Date;
 	updatedAt: Date;
