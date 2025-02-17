@@ -263,15 +263,16 @@ export default function DashboardPage() {
 
 			// Upload avatar to server
 			try {
-				const response = await axios.post("/upload-image", {
+				const data = await axios.post("/upload-image", {
 					formData,
 				});
 
-				// if (!response.ok) throw new Error("Failed to upload avatar.");
+				if (data.status !== 200)
+					throw new Error("Failed to upload avatar.");
 
 				// const data = await response.json();
-				// setAvatarPreview(data.avatarUrl); // Update avatar preview with the new URL
-				// setIsEditingAvatar(false); // Close file input after upload
+				setAvatarPreview(data.data.avatarUrl); // Update avatar preview with the new URL
+				setIsEditingAvatar(false); // Close file input after upload
 			} catch (error) {
 				console.error("Avatar upload failed:", error);
 			}

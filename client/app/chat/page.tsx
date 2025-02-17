@@ -41,7 +41,7 @@ export default function ChatPage() {
 				username: storedUsername,
 			});
 		}
-	}, [socket]);
+	}, [socket, room?.name]);
 
 	// Function to join a new chat room
 	const handleJoinRoom = async (roomId: string) => {
