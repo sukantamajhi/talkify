@@ -60,9 +60,6 @@ export default function ChatPage() {
 
 			// Store room details in localStorage for persistence
 			localStorage.setItem("room", JSON.stringify(roomData));
-
-			// Emit socket event to join the room
-			socket?.emit("joinRoom", { roomId: roomData._id, username });
 		} catch (error: any) {
 			// Handle errors and show a toast message
 			console.error(error, "<<-- Error in getting room details");
