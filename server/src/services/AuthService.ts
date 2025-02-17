@@ -97,6 +97,7 @@ export default {
 		id: string;
 		token: string;
 		name: string;
+		email: string;
 		userName: string;
 	}> => {
 		return new Promise(async (resolve, reject) => {
@@ -129,6 +130,7 @@ export default {
 					token,
 					id: user._id as string,
 					name: user.name,
+					email: user.email,
 					userName: user.userName,
 				});
 			} catch (error: any) {

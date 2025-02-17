@@ -25,14 +25,12 @@ function Header({
 	handleLogout: () => void;
 }) {
 	return (
-		<header className='w-full h-16 sticky top-0 flex justify-between items-center p-4 bg-white shadow-lg rounded-lg'>
+		<header className='w-full h-16 sticky top-0 flex justify-between items-center p-4 shadow-lg rounded-lg'>
 			<Link
 				href='/'
 				className='flex items-center hover:text-blue-600 transition-all duration-300'>
-				<MessageCircle className='w-8 h-8 text-black mr-2' />
-				<h1 className='text-2xl sm:text-3xl font-bold text-black'>
-					Talkify
-				</h1>
+				<MessageCircle className='w-8 h-8 mr-2' />
+				<h1 className='text-2xl sm:text-3xl font-bold'>Talkify</h1>
 			</Link>
 
 			<div className='flex items-center space-x-4'>
@@ -49,7 +47,7 @@ function Header({
 				</Button>
 
 				{showJoinRoom === "OWN" && ownRoomId && (
-					<span className='text-gray-600 text-sm sm:text-lg ml-2 sm:ml-4 hidden sm:inline-block'>
+					<span className='text-gray-600 dark:text-gray-300 text-sm sm:text-lg ml-2 sm:ml-4 hidden sm:inline-block'>
 						Chat Room ID: {ownRoomId}
 					</span>
 				)}
@@ -58,8 +56,8 @@ function Header({
 					<DropdownMenuTrigger asChild>
 						<Button
 							variant='ghost'
-							className='relative h-8 w-8 rounded-full'>
-							<Avatar className='h-8 w-8'>
+							className='relative h-10 w-10 p-4 rounded-full'>
+							<Avatar className='h-10 w-10'>
 								<AvatarImage
 									src='/placeholder.svg'
 									alt='User Avatar'

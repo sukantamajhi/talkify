@@ -131,7 +131,7 @@ export default function ChatPage() {
 			/>
 
 			{/* Main Content Area */}
-			<div className='flex flex-col items-center justify-center bg-gray-100 p-4 room-area'>
+			<div className='flex flex-col items-center justify-center p-4 room-area'>
 				{joinedRoom && room?._id ? (
 					<ChatArea room={room} socket={socket} />
 				) : (

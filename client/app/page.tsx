@@ -89,20 +89,20 @@ export default function AuthPage() {
 	};
 
 	return (
-		<div className='min-h-screen bg-gradient-to-r from-indigo-50 to-indigo-100 flex flex-col justify-center items-center p-6'>
+		<div className='min-h-screen bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex flex-col justify-center items-center p-6'>
 			<header className='mb-12 flex items-center'>
-				<MessageCircle className='w-10 h-10 text-primary mr-3' />
-				<h1 className='text-4xl font-extrabold text-primary'>
+				<MessageCircle className='w-10 h-10 text-primary dark:text-white mr-3' />
+				<h1 className='text-4xl font-extrabold text-primary dark:text-white'>
 					Talkify
 				</h1>
 			</header>
 
-			<Card className='w-full max-w-md bg-white shadow-lg rounded-2xl'>
+			<Card className='w-full max-w-md bg-white dark:bg-gray-900 shadow-lg rounded-2xl'>
 				<CardHeader className='pb-6'>
-					<CardTitle className='text-3xl font-semibold'>
+					<CardTitle className='text-3xl font-semibold text-gray-900 dark:text-white'>
 						{isLogin ? "Login" : "Sign Up"}
 					</CardTitle>
-					<CardDescription className='text-gray-500 text-lg'>
+					<CardDescription className='text-gray-500 dark:text-gray-400 text-lg'>
 						{isLogin
 							? "Enter your credentials to access your account"
 							: "Create an account to get started"}
@@ -114,7 +114,7 @@ export default function AuthPage() {
 							<div className='mb-6'>
 								<Label
 									htmlFor='name'
-									className='text-lg font-medium'>
+									className='text-lg font-medium dark:text-white'>
 									Name
 								</Label>
 								<Input
@@ -124,7 +124,7 @@ export default function AuthPage() {
 									value={name}
 									onChange={(e) => setName(e.target.value)}
 									required
-									className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
+									className='mt-2 p-3 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
 								/>
 							</div>
 						)}
@@ -132,7 +132,7 @@ export default function AuthPage() {
 						<div className='mb-6'>
 							<Label
 								htmlFor='email'
-								className='text-lg font-medium'>
+								className='text-lg font-medium dark:text-white'>
 								Email
 							</Label>
 							<Input
@@ -142,14 +142,14 @@ export default function AuthPage() {
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								required
-								className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
+								className='mt-2 p-3 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
 							/>
 						</div>
 
 						<div className='mb-6'>
 							<Label
 								htmlFor='password'
-								className='text-lg font-medium'>
+								className='text-lg font-medium dark:text-white'>
 								Password
 							</Label>
 							<div className='relative'>
@@ -162,19 +162,17 @@ export default function AuthPage() {
 										setPassword(e.target.value)
 									}
 									required
-									className='mt-2 p-3 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
+									className='mt-2 p-3 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200'
 								/>
-								{/* Eye Icon */}
 								<div
 									className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
 									onClick={() =>
 										setPasswordVisible(!passwordVisible)
-									} // Toggle visibility
-								>
+									}>
 									{passwordVisible ? (
-										<EyeOffIcon className='w-6 h-6 text-blue-800' />
+										<EyeOffIcon className='w-6 h-6 text-blue-800 dark:text-gray-300' />
 									) : (
-										<EyeIcon className='w-6 h-6 text-blue-800' />
+										<EyeIcon className='w-6 h-6 text-blue-800 dark:text-gray-300' />
 									)}
 								</div>
 							</div>
@@ -188,11 +186,11 @@ export default function AuthPage() {
 									onCheckedChange={(checked) =>
 										setRememberMe(checked as boolean)
 									}
-									className='text-indigo-600'
+									className='text-indigo-600 dark:text-indigo-400'
 								/>
 								<Label
 									htmlFor='remember'
-									className='text-gray-700'>
+									className='text-gray-700 dark:text-gray-300'>
 									Remember me
 								</Label>
 							</div>
@@ -200,20 +198,13 @@ export default function AuthPage() {
 
 						<Button
 							type='submit'
-							disabled={loading} // Disable the button while loading
-							className='w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-700 text-white rounded-lg font-semibold text-lg transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 transform hover:scale-105'>
-							{/* Conditionally render loading spinner or text */}
-							{loading ? (
-								<div className='flex justify-center items-center space-x-2'>
-									<div className='w-1.5 h-1.5 bg-white rounded-full animate-bounce'></div>
-									<div className='w-1.5 h-1.5 bg-white rounded-full animate-bounce delay-100'></div>
-									<div className='w-1.5 h-1.5 bg-white rounded-full animate-bounce delay-200'></div>
-								</div>
-							) : isLogin ? (
-								"Login"
-							) : (
-								"Sign Up"
-							)}
+							disabled={loading}
+							className='w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-700 dark:from-indigo-600 dark:to-indigo-800 text-white rounded-lg font-semibold text-lg transition-all duration-300 hover:from-indigo-600 hover:to-indigo-800 transform hover:scale-105'>
+							{loading
+								? "Loading..."
+								: isLogin
+								? "Login"
+								: "Sign Up"}
 						</Button>
 					</form>
 				</CardContent>
@@ -222,7 +213,7 @@ export default function AuthPage() {
 					<Button
 						variant='link'
 						onClick={() => setIsLogin(!isLogin)}
-						className='text-indigo-600 hover:underline text-lg'>
+						className='text-indigo-600 dark:text-indigo-400 hover:underline text-lg'>
 						{isLogin
 							? "Don't have an account? Sign Up"
 							: "Already have an account? Login"}

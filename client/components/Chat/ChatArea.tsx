@@ -94,8 +94,8 @@ function ChatArea({
 	};
 
 	return (
-		<Card className='w-full max-w-2xl h-[80vh] flex flex-col bg-white shadow-xl rounded-3xl overflow-hidden'>
-			<CardHeader className='flex items-center justify-between bg-indigo-600 p-6 rounded-t-3xl text-white'>
+		<Card className='w-full max-w-2xl h-[80vh] flex flex-col bg-gray-900 shadow-xl rounded-3xl overflow-hidden text-white'>
+			<CardHeader className='flex items-center justify-between bg-indigo-700 p-6 rounded-t-3xl text-white'>
 				<div className='flex items-center space-x-4'>
 					{/* Avatar Section */}
 					<Avatar className='w-16 h-16 border-2 border-white transition-transform transform hover:scale-110'>
@@ -103,18 +103,18 @@ function ChatArea({
 					</Avatar>
 
 					{/* Text Section */}
-					<div className='text-white'>
+					<div>
 						<h2 className='text-2xl font-bold'>
 							Welcome to Chat Room #{room?.name}
 						</h2>
-						<p className='text-gray-100 text-base'>
+						<p className='text-gray-300 text-base'>
 							Dive into the conversation and make new connections!
 						</p>
 					</div>
 				</div>
 			</CardHeader>
 
-			<CardContent className='flex-grow overflow-hidden p-6 bg-gray-50'>
+			<CardContent className='flex-grow overflow-hidden p-6 bg-gray-800'>
 				<div ref={scrollRef} className='h-full overflow-y-auto p-4'>
 					{messages.map((message) => (
 						<div
@@ -132,7 +132,7 @@ function ChatArea({
 								} w-full`}>
 								{/* System Message Styling */}
 								{message.sender?.name === "Talkify" ? (
-									<div className='w-full bg-gradient-to-r from-blue-100 to-blue-300 text-blue-900 p-3 rounded-lg shadow-lg text-center font-medium text-base transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-xl flex items-center justify-center'>
+									<div className='w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white p-3 rounded-lg shadow-lg text-center font-medium text-base transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-xl flex items-center justify-center'>
 										<span className='italic text-lg font-semibold mr-2'>
 											[Talkify]
 										</span>
@@ -141,15 +141,15 @@ function ChatArea({
 								) : (
 									<>
 										{message.sender?.name !== username && (
-											<div className='text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>
+											<div className='text-sm font-semibold text-gray-400 mb-1'>
 												{message.sender?.name}
 											</div>
 										)}
 										<div
 											className={`max-w-[75%] px-5 py-3 rounded-2xl shadow-lg transition-transform duration-200 ease-in-out transform ${
 												message.sender?._id === userId
-													? "bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
-													: "bg-gradient-to-r from-gray-200 to-gray-400 text-gray-800 hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
+													? "bg-gradient-to-r from-indigo-600 to-indigo-800 text-white hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
+													: "bg-gradient-to-r from-gray-700 to-gray-600 text-gray-200 hover:scale-105 hover:shadow-xl hover:translate-x-2 hover:translate-y-2"
 											} animate__animated animate__fadeIn`}>
 											{message.message}
 										</div>
@@ -161,7 +161,7 @@ function ChatArea({
 				</div>
 			</CardContent>
 
-			<CardFooter className='bg-gray-800 p-4 rounded-b-3xl'>
+			<CardFooter className='bg-gray-900 p-4 rounded-b-3xl'>
 				<form
 					onSubmit={handleSendMessage}
 					className='flex w-full space-x-2 items-center'>
@@ -169,12 +169,12 @@ function ChatArea({
 						value={newMessage}
 						onChange={(e) => setNewMessage(e.target.value)}
 						placeholder='Type your message...'
-						className='flex-grow p-3 rounded-xl bg-white border-2'
+						className='flex-grow p-3 rounded-xl bg-gray-700 text-white border-2 border-gray-600'
 						autoFocus
 					/>
 					<Button
 						type='submit'
-						className='bg-indigo-600 text-white px-6 py-3 rounded-xl'>
+						className='bg-indigo-700 text-white px-6 py-3 rounded-xl hover:bg-indigo-600'>
 						<Send className='h-5 w-5' />
 					</Button>
 				</form>

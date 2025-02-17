@@ -14,9 +14,9 @@ function RoomJoin({ onJoin }: { onJoin: (roomId: string) => void }) {
 	};
 
 	return (
-		<Card className='w-full max-w-md bg-white shadow-lg rounded-xl p-6'>
+		<Card className='w-full max-w-md shadow-lg rounded-xl p-6'>
 			<CardHeader className='pb-6'>
-				<CardTitle className='text-3xl font-semibold text-gray-900'>
+				<CardTitle className='text-3xl font-semibold text-gray-900 dark:text-gray-300'>
 					Join a Chat Room
 				</CardTitle>
 			</CardHeader>

@@ -16,11 +16,19 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle, Upload, Pen } from "lucide-react";
+import { MessageCircle, Upload, Pen, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import axios from "@/lib/axios";
 import Link from "next/link";
 import { getInitials } from "@/lib/utils";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { useSocket } from "@/hooks/useSocket";
 
 interface IUserProfile {
 	name: string;
@@ -54,13 +62,13 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className='max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-xl space-y-6'>
+			className='max-w-2xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-xl shadow-xl space-y-6'>
 			<div>
 				{/* Name Input */}
 				<div>
 					<Label
 						htmlFor='name'
-						className='text-gray-800 text-lg font-medium mb-2 block'>
+						className='text-lg font-medium mb-2 block'>
 						Name
 					</Label>
 					<Input
@@ -69,7 +77,7 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 						value={formData?.name}
 						onChange={handleChange}
 						required
-						className='mt-2 p-4 w-full rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
+						className='mt-2 p-4 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
 					/>
 				</div>
 
@@ -77,7 +85,7 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 				<div className='mt-4'>
 					<Label
 						htmlFor='email'
-						className='text-gray-800 text-lg font-medium mb-2 block'>
+						className='text-lg font-medium mb-2 block'>
 						Email
 					</Label>
 					<Input
@@ -87,13 +95,13 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 						value={formData?.email}
 						onChange={handleChange}
 						required
-						className='mt-2 p-4 w-full rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
+						className='mt-2 p-4 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
 					/>
 				</div>
 
 				{/* Bio Textarea (Optional) */}
 				{/* <div>
-					<Label htmlFor="bio" className="text-gray-800 text-lg font-medium mb-2 block">
+					<Label htmlFor="bio" className="text-lg font-medium mb-2 block">
 						Bio
 					</Label>
 					<Textarea
@@ -102,7 +110,7 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 						value={formData.bio}
 						onChange={handleChange}
 						rows={4}
-						className="mt-2 p-4 w-full rounded-lg border border-gray-300 bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out"
+						className="mt-2 p-4 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out"
 					/>
 				</div> */}
 
@@ -231,7 +239,14 @@ function RoomSettingsForm({ initialData }: { initialData: IRoomSettings }) {
 }
 
 export default function DashboardPage() {
-	const [userProfile, setUserProfile] = useState<IUserProfile>(null);
+	const router = useRouter();
+	const socket = useSocket();
+	const [userProfile, setUserProfile] = useState<IUserProfile>({
+		name: "",
+		email: "",
+		bio: "",
+		profilePicture: null,
+	});
 	const [avatarPreview, setAvatarPreview] = useState(
 		userProfile?.profilePicture || "/placeholder.svg"
 	);
@@ -263,8 +278,8 @@ export default function DashboardPage() {
 
 			// Upload avatar to server
 			try {
-				const data = await axios.post("/upload-image", {
-					formData,
+				const data = await axios.post("/upload-image", formData, {
+					headers: { "Content-Type": "multipart/form-data" },
 				});
 
 				if (data.status !== 200)
@@ -279,24 +294,64 @@ export default function DashboardPage() {
 		}
 	};
 
+	const handleLogout = () => {
+		// Clear user data and log out from the server
+		// Redirect to login page
+		localStorage.clear();
+		router.replace("/");
+		socket.off("message");
+	};
+
 	return (
-		<div className='flex flex-col min-h-screen bg-gray-100'>
+		<div className='flex flex-col min-h-screen'>
 			{/* Header and main content remain the same */}
-			<header className='w-full h-16 sticky top-0 flex justify-between items-center p-4 bg-white shadow-lg rounded-lg'>
+			<header className='w-full h-16 sticky top-0 flex justify-between items-center p-4 shadow-lg rounded-lg'>
 				<Link
 					href='/'
 					className='flex items-center hover:text-blue-600 transition-all duration-300'>
-					<MessageCircle className='w-8 h-8 text-black mr-2' />
-					<h1 className='text-2xl sm:text-3xl font-bold text-black'>
-						Talkify
-					</h1>
+					<MessageCircle className='w-8 h-8 mr-2' />
+					<h1 className='text-2xl sm:text-3xl font-bold'>Talkify</h1>
 				</Link>
+				<div className='flex items-center space-x-4'>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button
+								variant='ghost'
+								className='relative h-10 w-10 p-4 rounded-full'>
+								<Avatar className='h-10 w-10'>
+									<AvatarImage
+										src='/placeholder.svg'
+										alt='User Avatar'
+									/>
+									<AvatarFallback>
+										{getInitials(userProfile?.name)}
+									</AvatarFallback>
+								</Avatar>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent
+							className='w-56'
+							align='end'
+							forceMount>
+							<DropdownMenuItem asChild>
+								<Link href='/dashboard'>
+									<User className='mr-2 h-4 w-4' />
+									<span>Dashboard</span>
+								</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem onClick={handleLogout}>
+								<LogOut className='mr-2 h-4 w-4' />
+								<span>Log out</span>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 			</header>
 			<main className='flex-1 p-8'>
 				<div className='max-w-4xl mx-auto'>
-					<header className='mb-8'>
+					<div className='mb-8'>
 						<h1 className='text-3xl font-bold'>User Dashboard</h1>
-					</header>
+					</div>
 
 					<Tabs defaultValue='profile'>
 						<TabsList className='flex justify-start items-center gap-4 py-4 bg-transparent rounded-t-lg'>
@@ -334,7 +389,7 @@ export default function DashboardPage() {
 													alt='User Avatar'
 													className='object-cover rounded-full transition-all duration-300 ease-in-out'
 												/>
-												<AvatarFallback className='font-semibold text-2xl text-gray-800'>
+												<AvatarFallback className='font-semibold text-2xl'>
 													{userProfile?.name &&
 														getInitials(
 															userProfile?.name
@@ -344,7 +399,7 @@ export default function DashboardPage() {
 
 											{/* Pencil Icon */}
 											<div
-												className='absolute bottom-0 right-0 bg-white border-2 border-gray-300 rounded-full p-2 cursor-pointer shadow-lg hover:bg-gray-100 hover:shadow-2xl transition-all duration-300 ease-in-out'
+												className='absolute bottom-0 right-0 bg-gray-900 dark:bg-white border-2 border-gray-300 rounded-full p-2 cursor-pointer shadow-lg hover:bg-gray-100 hover:shadow-2xl transition-all duration-300 ease-in-out'
 												onClick={() =>
 													setIsEditingAvatar(true)
 												}>
@@ -367,10 +422,10 @@ export default function DashboardPage() {
 
 										{/* Profile Information */}
 										<div className='flex flex-col justify-center'>
-											<h2 className='text-2xl font-semibold text-gray-900'>
+											<h2 className='text-2xl font-semibold text-gray-900 dark:text-gray-300'>
 												{userProfile?.name}
 											</h2>
-											<p className='text-gray-600 text-lg'>
+											<p className='text-gray-600 dark:text-gray-200 text-lg'>
 												{userProfile?.email}
 											</p>
 										</div>
