@@ -1,7 +1,8 @@
-import nodemailer from "nodemailer";
 import fs from "fs/promises";
-import envConfig from "../utils/envConfig";
 import handlebars from "handlebars";
+import {nanoid} from "nanoid";
+import nodemailer from "nodemailer";
+import envConfig from "../utils/envConfig";
 
 const createTransporter = () => {
 	return nodemailer.createTransport({
@@ -38,17 +39,23 @@ interface ISendMail {
 	html: string;
 }
 
-const sendMail = async ({ to, subject, html }: ISendMail): Promise<void> => {
+const sendMail = async ({to, subject, html}: ISendMail): Promise<void> => {
 	const transporter = createTransporter();
 	const mailOptions = {
 		from: `"${envConfig.from_name}" <${envConfig.email_user}>`,
 		to,
 		subject,
 		html,
+		dsn: {
+			id: nanoid(),
+			return: 'headers',
+			notify: 'success',
+			recipient: envConfig.email_user
+		}
 	};
 
 	try {
-		transporter.sendMail(mailOptions);
+		await transporter.sendMail(mailOptions);
 		console.log("Email sent successfully");
 	} catch (error) {
 		console.error("Error sending email:", error);

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import {Router} from "express";
 import AuthController from "../controllers/AuthController";
 import {
 	ensureOneOfEmailUsernamePhone,
@@ -19,6 +19,9 @@ router.post(
 	ensureOneOfEmailUsernamePhone,
 	AuthController.login
 );
+
+// POST /auth/email-verification
+router.post("/email-verification", AuthController.emailVerification)
 
 // POST /auth/forgot-password
 router.post(
