@@ -17,6 +17,8 @@ export const UserMessages = {
 	USER_DELETED: "User deleted successfully",
 	USER_UPDATED: "User updated successfully",
 	USER_FETCHED: "User fetched successfully",
+	EMAIL_VERIFIED_FAILED: "Email verification failed",
+	EMAIL_VERIFIED: "Email verification successful",
 };
 
 export const RoomMessages = {

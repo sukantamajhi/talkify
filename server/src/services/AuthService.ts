@@ -1,14 +1,12 @@
-import UserModel, { IUser } from "../models/UserModel";
 import bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
-import envConfig from "../utils/envConfig";
-import sendMail, { compileTemplate } from "./EmailService";
-import { ERRORS } from "../utils/messages";
 import logger from "../../logger";
-import path from "path";
-import { convertHtmlToHbs } from "../utils/utils";
-import { UserProjection } from "../utils/Projections/UserProjection";
 import RoomModel from "../models/RoomModel";
+import UserModel, {IUser} from "../models/UserModel";
+import envConfig from "../utils/envConfig";
+import {ERRORS} from "../utils/messages";
+import {convertHtmlToHbs, decodeToken, generateToken, isTokenExpired} from "../utils/utils";
+import sendMail from "./EmailService";
 
 const JWT_SECRET = envConfig.jwtSecret;
 const SALT_ROUNDS = 10;
@@ -20,17 +18,30 @@ interface ICheckUserExist {
 }
 
 const checkUserExists = async ({
-	email,
-	username,
-	isActive = true,
-}: Partial<ICheckUserExist>) => {
+	                               email,
+	                               username,
+	                               isActive = true,
+                               }: Partial<ICheckUserExist>) => {
 	// logger.info(email, username, 'Checking user exists');
-	const user = await UserModel.findOne({
+	return UserModel.findOne({
 		email,
 		isActive,
 	});
-	return user;
 };
+
+interface ILoginResponse {
+	id: string;
+	token: string;
+	name: string;
+	email: string;
+	userName: string;
+}
+
+interface IEmailVerificationPayload {
+	_id: string;
+	email: string;
+	expiredAt: number;
+}
 
 export default {
 	register: async (userData: IUser): Promise<Partial<IUser>> => {
@@ -39,8 +50,8 @@ export default {
 				const userExists = await checkUserExists({
 					email: userData?.email,
 				});
-				logger.info(userExists, "<<-- userExists");
-				if (userExists) {
+				// logger.info(userExists, "<<-- userExists");
+				if (userExists !== null) {
 					return reject(ERRORS.USER_ALREADY_EXISTS);
 				}
 
@@ -64,16 +75,28 @@ export default {
 					});
 				}
 
+				let expiredAt = new Date();
+				const EXPIRED_AFTER = 24;
+				expiredAt.setHours(expiredAt.getHours() + EXPIRED_AFTER); // Token will expire after 24 hours of generating
+
+				const emailVerificationToken = generateToken({
+					_id: newUser._id,
+					email: newUser.email,
+					expiredAt
+				})
+
 				const emailTemplate = await convertHtmlToHbs({
-					templateName: "registration-successful",
+					templateName: "verify-email",
 					data: {
 						name: newUser.name,
+						expiredAfter: EXPIRED_AFTER,
+						verificationLink: `http://localhost:3000/verify-email?token=${emailVerificationToken}`
 					},
 				});
 
-				await sendMail({
+				sendMail({
 					to: newUser.email,
-					subject: "Welcome Aboard! Your Talkify Account is Ready",
+					subject: "Email Verification - Verify Your Talkify Account",
 					html: emailTemplate as string,
 				});
 
@@ -93,16 +116,10 @@ export default {
 	},
 	login: async (
 		userData: IUser
-	): Promise<{
-		id: string;
-		token: string;
-		name: string;
-		email: string;
-		userName: string;
-	}> => {
+	): Promise<ILoginResponse> => {
 		return new Promise(async (resolve, reject) => {
 			try {
-				const user = await checkUserExists({ email: userData.email });
+				const user = await checkUserExists({email: userData.email});
 				if (!user) {
 					return reject(ERRORS.USER_NOT_FOUND);
 				}
@@ -115,12 +132,13 @@ export default {
 					return reject(ERRORS.INVALID_CREDENTIALS);
 				}
 
-				const token = jwt.sign({ email: user.email }, JWT_SECRET, {
+				const token = jwt.sign({email: user.email}, JWT_SECRET, {
 					expiresIn: "1h",
 				});
 				if (!token) {
 					return reject(ERRORS.TOKEN_GENERATION_ERROR);
 				}
+
 
 				user.lastLogin = new Date();
 				user.loginToken = token;
@@ -138,10 +156,57 @@ export default {
 			}
 		});
 	},
+
+	emailVerification: (bodyData: { token: string }) => {
+		return new Promise<boolean>(async (resolve, reject) => {
+			try {
+				const decodedToken = decodeToken(bodyData.token) as IEmailVerificationPayload;
+
+				const tokenExpired = isTokenExpired(decodedToken.expiredAt)
+
+				if (!tokenExpired) {
+					// Find the user
+					const user = await checkUserExists({
+						email: decodedToken.email,
+					})
+
+					if (!user) {
+						return reject(ERRORS.USER_NOT_FOUND);
+					} else if (user.isActive) {
+						return reject(ERRORS.USER_ALREADY_EXISTS);
+					} else {
+						user.isActive = true;
+
+						const updatedUser = await user.save();
+
+						const emailTemplate = await convertHtmlToHbs({
+							templateName: "registration-successful",
+							data: {
+								name: updatedUser.name,
+							},
+						});
+
+						sendMail({
+							to: updatedUser.email,
+							subject: "Welcome Aboard! Your Talkify Account is Ready",
+							html: emailTemplate as string,
+						});
+
+						return resolve(true);
+					}
+				}
+
+			} catch (error) {
+				logger.error(error, "<<-- Error in email verification service");
+				return reject(ERRORS.INVALID_CREDENTIALS);
+			}
+		})
+	},
+
 	forgotPassword: async (email: string): Promise<string> => {
 		return new Promise(async (resolve, reject) => {
 			try {
-				const userExists = await checkUserExists({ email });
+				const userExists = await checkUserExists({email});
 				if (!userExists) {
 					return reject(ERRORS.USER_NOT_FOUND);
 				}
@@ -171,7 +236,7 @@ export default {
 		password: string;
 	}): Promise<string> => {
 		try {
-			const user = await checkUserExists({ email: data.email });
+			const user = await checkUserExists({email: data.email});
 			if (!user) {
 				throw ERRORS.USER_NOT_FOUND;
 			}
@@ -181,8 +246,8 @@ export default {
 				SALT_ROUNDS
 			);
 			await UserModel.updateOne(
-				{ email: data.email },
-				{ password: hashedPassword }
+				{email: data.email},
+				{password: hashedPassword}
 			);
 			return "Password reset successfully";
 		} catch (error: any) {
@@ -191,7 +256,7 @@ export default {
 	},
 	logout: async (email: string): Promise<void> => {
 		try {
-			const user = await checkUserExists({ email });
+			const user = await checkUserExists({email});
 			if (!user) {
 				throw ERRORS.USER_NOT_FOUND;
 			}

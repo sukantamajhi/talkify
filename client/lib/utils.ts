@@ -1,5 +1,6 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import {AxiosResponse} from "axios";
+import {type ClassValue, clsx} from "clsx";
+import {twMerge} from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -9,29 +10,6 @@ export function isDev() {
 	return process.env.NODE_ENV === "development";
 }
 
-// export function generateToken(
-// 	payload: genTokenPayload,
-// 	secret: string
-// ): string {
-// 	try {
-// 		const stringPayload =
-// 			typeof payload === "string" ? payload : JSON.stringify(payload);
-// 		return CryptoJS.AES.encrypt(stringPayload, secret).toString();
-// 	} catch (error) {
-// 		logger.error(error, "Error in generateToken");
-// 		throw error;
-// 	}
-// }
-
-// export function decodeToken(token: string, secret: string): tokenData {
-// 	try {
-// 		const bytes = CryptoJS.AES.decrypt(token, secret);
-// 		return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-// 	} catch (error) {
-// 		logger.error(error, "Error in decodeToken");
-// 		throw error;
-// 	}
-// }
 
 export const setLocalStorageValue = (key: string, value: any) => {
 	if (typeof window === "undefined") return null;
@@ -69,3 +47,5 @@ export function getInitials(fullName: string) {
 	// In case there's only one part (e.g., single name)
 	return nameParts[0][0]?.toUpperCase();
 }
+
+export const isResSuccess = (response: AxiosResponse<any, any>) => response.status.toString().startsWith("2")

@@ -1,9 +1,9 @@
-import { Application, Request, Response } from "express";
-import authService from "../services/AuthService";
-import { IRequest } from "../utils/types";
-import { CommonMessages, UserMessages } from "../utils/messages";
-import { validationResult } from "express-validator";
+import {Request, Response} from "express";
+import {validationResult} from "express-validator";
 import logger from "../../logger";
+import authService from "../services/AuthService";
+import {CommonMessages, UserMessages} from "../utils/messages";
+import {IRequest} from "../utils/types";
 
 export default {
 	register: async (
@@ -15,7 +15,7 @@ export default {
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
+			return res.status(400).json({errors: errors.array()});
 		}
 		try {
 			const user = await authService.register(req.body);
@@ -37,23 +37,45 @@ export default {
 		// Check for validation errors
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
+			return res.status(400).json({errors: errors.array()});
 		}
 
 		try {
-			const { id, token, name, userName, email } =
+			const {id, token, name, userName, email} =
 				await authService.login(req.body);
 
 			return res.status(200).send({
 				error: false,
 				code: "USER_LOGGED_IN",
 				message: UserMessages.USER_LOGGED_IN,
-				data: { id, name, userName, email },
+				data: {id, name, userName, email},
 				token,
 			});
 		} catch (error: any) {
 			logger.error(error, "<<-- Error in login api");
 			next(error);
+		}
+	},
+
+	emailVerification: async (
+		req: IRequest,
+		res: Response,
+		next: Function
+	): Promise<any> => {
+		try {
+			const success = await authService.emailVerification(req.body)
+
+			if (success) {
+				return res.status(200).send({
+					error: false,
+					code: "USER_LOGGED_IN",
+					message: UserMessages.EMAIL_VERIFIED,
+				})
+			}
+
+		} catch (e) {
+			logger.error(e, "<<-- Error in email verification controller");
+			next(e);
 		}
 	},
 
@@ -97,7 +119,7 @@ export default {
 	): Promise<any> => {
 		try {
 			if (req.user) {
-				const { email } = req.user;
+				const {email} = req.user;
 				await authService.logout(email);
 				return res.status(200).json({
 					error: false,

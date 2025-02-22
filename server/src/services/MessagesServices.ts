@@ -1,6 +1,7 @@
-import MessagesModel, { IMessage } from "../models/MessagesModel";
 import logger from "../../logger";
-import { ISocketUser } from "../utils/types";
+import MessagesModel, {IMessage} from "../models/MessagesModel";
+import envConfig from "../utils/envConfig";
+import {ISocketUser} from "../utils/types";
 
 const MessagesServices = (socket: ISocketUser, io: any) => {
 	socket.on("joinRoom", async (data) => {
@@ -12,10 +13,10 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 			socket.to(data.room).emit("message", {
 				_id: Math.random(),
 				sender: {
-					_id: "67b0eccf9a0077e9102c09db",
-					name: "Talkify",
-					email: "noreply@talkify.com",
-					userName: "talkify",
+					_id: envConfig.sys_user_id,
+					name: envConfig.sys_name,
+					email: envConfig.sys_email,
+					userName: envConfig.sys_username,
 				},
 				message: `${socket.user.name} has joined the chat.`,
 				roomId: data.roomId,
@@ -44,7 +45,7 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 			message: data.message,
 		};
 
-		logger.info({ constructedMessage, data }, "<<-- data.room");
+		logger.info({constructedMessage, data}, "<<-- data.room");
 
 		io.to(data.room).emit("message", constructedMessage);
 	});
@@ -52,8 +53,8 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 	socket.on("getLastMessages", async (data) => {
 		console.log(data, "<<-- getLastMessages");
 		try {
-			const messages = await MessagesModel.find({ roomId: data.roomId })
-				.sort({ createdAt: -1 })
+			const messages = await MessagesModel.find({roomId: data.roomId})
+				.sort({createdAt: -1})
 				.limit(data.limit || 50)
 				.lean();
 

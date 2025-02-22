@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, {Document, Schema} from "mongoose";
 
 export interface IUser extends Document {
 	name: string;
@@ -17,7 +17,7 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
 	{
-		name: { type: String, required: true, trim: true },
+		name: {type: String, required: true, trim: true},
 		email: {
 			type: String,
 			required: true,
@@ -25,14 +25,14 @@ const UserSchema = new Schema<IUser>(
 			unique: true,
 			match: [/.+\@.+\..+/, "Please fill a valid email address"],
 		},
-		userName: { type: String, required: true, trim: true, unique: true },
-		password: { type: String, required: true, minlength: 6 },
-		profilePicture: { type: String, default: "" },
-		lastLogin: { type: Date, default: null },
-		loginToken: { type: String, default: null, unique: true },
+		userName: {type: String, required: true, trim: true, unique: true},
+		password: {type: String, required: true, minlength: 6},
+		profilePicture: {type: String, default: ""},
+		lastLogin: {type: Date, default: null},
+		loginToken: {type: String, default: null, unique: true},
 		isActive: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
 		isDeleted: {
 			type: Boolean,
