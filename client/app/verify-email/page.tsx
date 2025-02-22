@@ -112,7 +112,7 @@ const VerifyEmailPage = () => {
 									<li>The link might have been already used.</li>
 									<li>Technical issues on our end.</li>
 								</ul>
-								<p>If you're still having trouble, reach out to our support team.</p>
+								<p>If you&#39;re still having trouble, reach out to our support team.</p>
 							</div>
 							<Button
 								onClick={() => router.push("/")}
