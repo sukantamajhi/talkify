@@ -1,7 +1,32 @@
 import logger from "../../logger";
-import MessagesModel, {IMessage} from "../models/MessagesModel";
+import MessagesModel, { IMessage } from "../models/MessagesModel";
 import envConfig from "../utils/envConfig";
-import {ISocketUser} from "../utils/types";
+import { ISocketUser } from "../utils/types";
+import {
+	GoogleGenerativeAI,
+	HarmCategory,
+	HarmBlockThreshold,
+} from "@google/generative-ai";
+
+const apiKey = envConfig.gemini_api_key;
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+	model: "gemini-2.0-pro-exp-02-05",
+});
+
+const generationConfig = {
+	temperature: 1,
+	topP: 0.95,
+	topK: 64,
+	maxOutputTokens: 8192,
+	responseMimeType: "text/plain",
+};
+
+const chatSession = model.startChat({
+	generationConfig,
+	history: [],
+});
 
 const MessagesServices = (socket: ISocketUser, io: any) => {
 	socket.on("joinRoom", async (data) => {
@@ -27,6 +52,20 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 	socket.on("sendMessage", async (data) => {
 		logger.info(data, "<<-- Message received");
 
+		if (!socket.user.name || !data.message || !data.roomId) {
+			logger.error("Invalid message data received");
+			return;
+		}
+
+		// Check if the message starts with "@AI" if so then call a gemini api and return a ai generated response
+
+		if (data.message.startsWith("@AI")) {
+			const result = await chatSession.sendMessage(
+				data.message.split("@AI")[1]
+			);
+			console.log(result.response.text());
+		}
+
 		const message = new MessagesModel({
 			sender: socket.user._id,
 			roomId: data.roomId,
@@ -45,7 +84,7 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 			message: data.message,
 		};
 
-		logger.info({constructedMessage, data}, "<<-- data.room");
+		logger.info({ constructedMessage, data }, "<<-- data.room");
 
 		io.to(data.room).emit("message", constructedMessage);
 	});
@@ -53,8 +92,8 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 	socket.on("getLastMessages", async (data) => {
 		console.log(data, "<<-- getLastMessages");
 		try {
-			const messages = await MessagesModel.find({roomId: data.roomId})
-				.sort({createdAt: -1})
+			const messages = await MessagesModel.find({ roomId: data.roomId })
+				.sort({ createdAt: -1 })
 				.limit(data.limit || 50)
 				.lean();
 

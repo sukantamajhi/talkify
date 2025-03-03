@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -10,19 +9,20 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { EyeIcon, EyeOffIcon, MessageCircle } from "lucide-react";
+import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import axios from "@/lib/axios";
-import { useRouter } from "next/navigation";
 import {
 	getLocalStorageValue,
 	isClient,
 	setLocalStorageValue,
 } from "@/lib/utils";
-import { Toaster } from "@/components/ui/toaster";
+import { EyeIcon, EyeOffIcon, MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 export default function AuthPage() {
 	const { toast } = useToast();

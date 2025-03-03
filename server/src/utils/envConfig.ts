@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
 export default {
-	log_level: (process.env.LOG_LEVEL as string) || 'info',
+	log_level: (process.env.LOG_LEVEL as string) || "info",
 	port: (process.env.PORT as string) || 5000,
 	mongoURI: process.env.MONGO_URI as string,
 	jwtSecret: process.env.JWT_SECRET as string,
@@ -16,4 +16,6 @@ export default {
 	sys_name: process.env.SYSTEM_NAME as string,
 	sys_email: process.env.SYSTEM_EMAIL as string,
 	sys_username: process.env.SYSTEM_USERNAME as string,
+	// Gemini information
+	gemini_api_key: process.env.GEMINI_API_KEY as string,
 };
