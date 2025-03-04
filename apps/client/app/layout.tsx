@@ -1,4 +1,4 @@
-import type {Metadata} from "next";
+import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -19,16 +19,16 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-	                                   children,
-                                   }: Readonly<{
+	children,
+}: Readonly<{
 	children: React.ReactNode;
 }>) {
 	return (
 		<html lang='en'>
-		<body
-			className={`antialiased bg-white dark:bg-gray-900 text-black dark:text-white`}>
-		{children}
-		</body>
+			<body
+				className={`antialiased bg-white dark:bg-gray-900 text-black dark:text-white`}>
+				{children}
+			</body>
 		</html>
 	);
 }

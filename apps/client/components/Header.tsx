@@ -62,7 +62,7 @@ function Header({
 									src='/placeholder.svg'
 									alt='User Avatar'
 								/>
-								<AvatarFallback>
+								<AvatarFallback className='text-white bg-blue-600 dark:bg-white dark:text-black'>
 									{getInitials(userName)}
 								</AvatarFallback>
 							</Avatar>

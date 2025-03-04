@@ -62,8 +62,8 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className='max-w-2xl mx-auto p-8 bg-white dark:bg-gray-900 rounded-xl shadow-xl space-y-6'>
-			<div>
+			className='max-w-4xl mx-auto p-6 sm:p-8 bg-white dark:bg-gray-900 rounded-xl shadow-xl space-y-6'>
+			<div className='space-y-4'>
 				{/* Name Input */}
 				<div>
 					<Label
@@ -77,12 +77,12 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 						value={formData?.name}
 						onChange={handleChange}
 						required
-						className='mt-2 p-4 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
+						className='mt-2 p-4 w-full rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
 					/>
 				</div>
 
 				{/* Email Input */}
-				<div className='mt-4'>
+				<div>
 					<Label
 						htmlFor='email'
 						className='text-lg font-medium mb-2 block'>
@@ -95,24 +95,9 @@ function UserProfileForm({ initialData }: { initialData: IUserProfile }) {
 						value={formData?.email}
 						onChange={handleChange}
 						required
-						className='mt-2 p-4 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
+						className='mt-2 p-4 w-full rounded-lg border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out'
 					/>
 				</div>
-
-				{/* Bio Textarea (Optional) */}
-				{/* <div>
-					<Label htmlFor="bio" className="text-lg font-medium mb-2 block">
-						Bio
-					</Label>
-					<Textarea
-						id="bio"
-						name="bio"
-						value={formData.bio}
-						onChange={handleChange}
-						rows={4}
-						className="mt-2 p-4 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300 ease-in-out"
-					/>
-				</div> */}
 
 				{/* Submit Button */}
 				<Button
@@ -223,6 +208,7 @@ function RoomSettingsForm({ initialData }: { initialData: IRoomSettings }) {
 							<Button
 								type='button'
 								variant='outline'
+								className='text-white dark:text-black'
 								onClick={() => fileInputRef.current?.click()}>
 								<Upload className='w-4 h-4 mr-2' />
 								Upload Thumbnail
@@ -379,7 +365,7 @@ export default function DashboardPage() {
 									</CardDescription>
 								</CardHeader>
 
-								<CardContent className='px-6 py-4'>
+								<CardContent className='px-6 py-4 antialiased bg-white dark:bg-gray-900 text-black dark:text-white'>
 									<div className='flex items-center space-x-6 mb-6'>
 										{/* Avatar Section */}
 										<div className='relative'>
@@ -389,7 +375,7 @@ export default function DashboardPage() {
 													alt='User Avatar'
 													className='object-cover rounded-full transition-all duration-300 ease-in-out'
 												/>
-												<AvatarFallback className='font-semibold text-2xl'>
+												<AvatarFallback className='font-semibold text-2xl text-white bg-blue-600 dark:bg-white dark:text-black'>
 													{userProfile?.name &&
 														getInitials(
 															userProfile?.name
@@ -451,7 +437,7 @@ export default function DashboardPage() {
 									</CardDescription>
 								</CardHeader>
 
-								<CardContent className='px-6 py-4'>
+								<CardContent className='px-6 py-4 antialiased bg-white dark:bg-gray-900 text-black dark:text-white'>
 									<RoomSettingsForm
 										initialData={roomSettings}
 									/>

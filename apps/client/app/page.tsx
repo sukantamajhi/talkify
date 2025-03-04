@@ -203,8 +203,8 @@ export default function AuthPage() {
 							{loading
 								? "Loading..."
 								: isLogin
-								? "Login"
-								: "Sign Up"}
+									? "Login"
+									: "Sign Up"}
 						</Button>
 					</form>
 				</CardContent>
