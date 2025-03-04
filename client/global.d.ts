@@ -22,7 +22,7 @@ export interface IUser {
 
 export interface IMessage {
 	_id: string;
-	sender: IUser;
+	sender: Pick<IUser, "name" | "_id">;
 	roomId: string;
 	message: string;
 	createdAt?: Date;

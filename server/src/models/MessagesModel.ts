@@ -4,7 +4,7 @@ import { IUser } from "./UserModel";
 
 export interface IMessage extends Document {
 	_id: string;
-	sender: IUser;
+	sender: Pick<IUser, "_id" | "name">;
 	roomId: string;
 	message: string;
 }
