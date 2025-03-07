@@ -18,4 +18,13 @@ export default {
 	sys_username: process.env.SYSTEM_USERNAME as string,
 	// Gemini information
 	gemini_api_key: process.env.GEMINI_API_KEY as string,
+	// Kafka information
+	KAFKA_HOST: process.env.KAFKA_HOST as string,
+	KAFKA_PORT: process.env.KAFKA_PORT as string,
+	KAFKA_TOPIC: process.env.KAFKA_TOPIC as string,
+	KAFKA_GROUP_ID: process.env.KAFKA_GROUP_ID as string,
+	KAFKA_USERNAME: process.env.KAFKA_USERNAME as string,
+	KAFKA_PASSWORD: process.env.KAFKA_PASSWORD as string,
+	KAFKA_CA_FILE_PATH: process.env.KAFKA_CA_FILE_PATH as string,
+	KAFKA_MECHANISM: process.env.KAFKA_MECHANISM as string,
 };
