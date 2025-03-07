@@ -16,6 +16,7 @@
         "handlebars": "^4.7.8",
         "ioredis": "^5.5.0",
         "jsonwebtoken": "^9.0.2",
+        "kafkajs": "^2.2.4",
         "mongoose": "^8.9.2",
         "nanoid": "^5.1.2",
         "nodemailer": "^6.9.16",
@@ -25,7 +26,8 @@
         "socket.io": "^4.8.1",
         "socket.io-redis": "^6.1.1",
         "ts-node": "^10.9.2",
-        "typescript": "^5.7.2"
+        "typescript": "^5.7.2",
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
         "@types/bcryptjs": "^2.4.6",
@@ -41,7 +43,7 @@
     "scripts": {
         "build": "tsc",
         "start": "node build/server.js",
-        "dev": "tsnd --respawn --rs server.ts",
+        "dev": "bun --watch server.ts",
         "prettier-format": "prettier '**/*.ts' --write"
     },
     "engines": {

@@ -55,7 +55,7 @@ function ChatArea({
 	// Join room and fetch messages when room or username changes
 	useEffect(() => {
 		if (room?._id && username) {
-			socket.emit("joinRoom", { room: room._id, username });
+			socket.emit("room::join", { room: room._id, username });
 			socket.emit("getLastMessages", { roomId: room._id, limit: 50 });
 
 			socket.on("message", handleNewMessage);
@@ -99,7 +99,7 @@ function ChatArea({
 			};
 
 			setMessages((prev) => [...prev, newMsg]);
-			socket.emit("sendMessage", messageData);
+			socket.emit("message::send", messageData);
 			setNewMessage("");
 		}
 	};

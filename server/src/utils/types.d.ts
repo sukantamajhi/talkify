@@ -1,6 +1,6 @@
-import {Request} from "express";
-import {Socket} from "socket.io";
-import {IUser} from "../models/UserModel";
+import { Request } from "express";
+import { DefaultEventsMap, Socket } from "socket.io";
+import { IUser } from "../models/UserModel";
 
 // Extend the Request interface to include a user property
 export interface IRequest extends Request {
@@ -12,7 +12,7 @@ export type IUserWithOneFieldRequired =
 	| { username: string; email?: never };
 
 export interface ISocketUser extends Socket {
-	user: IUser;
+	user?: IUser;
 }
 
 export type genTokenPayload =

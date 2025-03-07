@@ -36,7 +36,7 @@ export default function ChatPage() {
 			// Update the UI based on whether it's the "own room" or not
 			const ownRoomId = localStorage.getItem("selfRoomId");
 			setShowJoinRoom(room?.name === ownRoomId ? "OWN" : "OTHER");
-			socket?.emit("joinRoom", {
+			socket?.emit("room::join", {
 				roomId: parsedRoom._id,
 				username: storedUsername,
 			});
@@ -97,7 +97,7 @@ export default function ChatPage() {
 				localStorage.setItem("room", JSON.stringify(roomData));
 
 				// Emit socket event to join the room
-				socket?.emit("joinRoom", { roomId: roomData._id, username });
+				socket?.emit("room::join", { roomId: roomData._id, username });
 			} catch (error) {
 				console.error(error);
 			}
