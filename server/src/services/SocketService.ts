@@ -24,6 +24,7 @@ class SocketService {
 			cors: {
 				origin: [
 					"http://localhost:3000",
+					"http://192.168.0.104:3000",
 					"https://talkify-one.vercel.app",
 				], // Allow requests from your client URL
 				methods: ["GET", "POST"],

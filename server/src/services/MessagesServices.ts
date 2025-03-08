@@ -47,12 +47,19 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 		}
 	});
 
-	socket.on("room::exit", async (data) => {
+	socket.on("room::leave", async (data) => {
 		try {
 			logger.info(`${socketUser.name} left room: ${data.roomId}`);
 			socket.leave(data.roomId);
+
+			// Emit system message to notify others that user has left
+			emitSystemMessage(
+				socket,
+				data.roomId,
+				`${socketUser.name} has left the chat.`
+			);
 		} catch (error) {
-			logger.error(error, "Error handling 'room::exit':");
+			logger.error(error, "Error handling 'room::leave':");
 		}
 	});
 
@@ -69,18 +76,19 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 				sender: socketUser._id,
 				roomId: data.roomId,
 				message: data.message,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
 			};
 
 			// await message.save();
 
-			const constructedMessage: Pick<
-				IMessage,
-				"_id" | "sender" | "roomId" | "message"
-			> = {
+			const constructedMessage: IMessage = {
 				_id: uuidv7(),
 				sender: socketUser,
 				roomId: data.roomId,
 				message: data.message,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
 			};
 
 			logger.info({ constructedMessage, data }, "<<-- data.room");
@@ -105,11 +113,13 @@ const MessagesServices = (socket: ISocketUser, io: any) => {
 				.limit(data.limit || 50)
 				.lean();
 
-			const formattedMessages = messages.map((msg: any) => ({
+			const formattedMessages = messages.map((msg: IMessage) => ({
 				_id: msg._id,
 				sender: msg.sender,
 				roomId: msg.roomId,
 				message: msg.message,
+				createdAt: msg.createdAt,
+				updatedAt: msg.updatedAt,
 			}));
 
 			socket.emit("lastMessages", formattedMessages.reverse());

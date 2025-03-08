@@ -1,14 +1,13 @@
 import express from "express";
-import mongoose from "mongoose";
 import router from "./src/routes/router";
 import logger from "./logger";
 import errorHandler from "./src/middleware/ErrorMiddleware";
 import cors from "cors";
-import MessagesServices from "./src/services/MessagesServices";
-import UserModel from "./src/models/UserModel";
 import connectToDb from "./src/database";
 import SocketService from "./src/services/SocketService";
 import { startConsumer } from "./src/services/kafka";
+
+// TODO: https://medium.com/@amberkakkar01/getting-started-with-apache-kafka-on-docker-a-step-by-step-guide-48e71e241cf2
 
 async function init() {
 	startConsumer();
@@ -16,7 +15,11 @@ async function init() {
 	app.use(express.json());
 	app.use(
 		cors({
-			origin: ["http://localhost:3000", "https://talkify-one.vercel.app"], // Allow requests from your client URL
+			origin: [
+				"http://localhost:3000",
+				"http://192.168.0.104:3000",
+				"https://talkify-one.vercel.app",
+			], // Allow requests from your client URL
 			methods: ["GET", "POST", "PUT", "DELETE"],
 			allowedHeaders: ["*"],
 			credentials: true,
