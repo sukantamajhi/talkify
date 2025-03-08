@@ -27,4 +27,15 @@ export default {
 	KAFKA_PASSWORD: process.env.KAFKA_PASSWORD as string,
 	KAFKA_CA_FILE_PATH: process.env.KAFKA_CA_FILE_PATH as string,
 	KAFKA_MECHANISM: process.env.KAFKA_MECHANISM as string,
+	// Redis information
+	REDIS_HOST: (process.env.REDIS_HOST as string) || "localhost",
+	REDIS_PORT: (process.env.REDIS_PORT as string) || "6379",
+	REDIS_PASSWORD: process.env.REDIS_PASSWORD as string,
+	// CORS settings
+	ALLOWED_ORIGINS:
+		(process.env.ALLOWED_ORIGINS as string) ||
+		"http://localhost:3000,https://talkify-one.vercel.app",
+	// App settings
+	NODE_ENV: (process.env.NODE_ENV as string) || "development",
+	APP_URL: (process.env.APP_URL as string) || "http://localhost:5000",
 };

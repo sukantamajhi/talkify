@@ -25,6 +25,6 @@ export interface IMessage {
 	sender: Pick<IUser, "name" | "_id">;
 	roomId: string;
 	message: string;
-	createdAt?: Date;
-	updatedAt?: Date;
+	createdAt?: string | Date;
+	updatedAt?: string | Date;
 }
