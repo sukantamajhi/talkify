@@ -148,7 +148,13 @@ function ChatArea({
 	// Handle incoming message
 	const handleNewMessage = useCallback(
 		(data: IMessage) => {
-			if (!data || !data.roomId || data.roomId !== room?._id) return;
+			if (
+				!data ||
+				!data.roomId ||
+				data.roomId !== room?._id ||
+				data.sender._id === userId
+			)
+				return;
 
 			// Prevent duplicate messages
 			if (messageCache.has(data._id)) return;
@@ -165,7 +171,7 @@ function ChatArea({
 
 			setMessages((prev) => [...prev, data]);
 		},
-		[room]
+		[room?._id, userId]
 	);
 
 	// Handle last messages from the server

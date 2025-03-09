@@ -52,15 +52,6 @@ const emitSystemMessage = async (
 
 		// Broadcast to room
 		socket.to(roomId).emit("message", systemMessage);
-
-		// // Also save system messages to database
-		// await MessagesModel.create({
-		// 	sender: envConfig.sys_user_id,
-		// 	roomId,
-		// 	message,
-		// 	createdAt: new Date().toISOString(),
-		// 	updatedAt: new Date().toISOString(),
-		// });
 	} catch (error) {
 		logger.error("Error sending system message:", error);
 	}
@@ -210,7 +201,7 @@ const MessagesServices = (socket: ISocketUser, io: any): void => {
 					);
 
 					// Also emit to the sender so they get immediate feedback
-					socket.emit("message", constructedMessage);
+					// socket.emit("message", constructedMessage);
 				} catch (redisError) {
 					logger.error("Redis publish error:", redisError);
 
