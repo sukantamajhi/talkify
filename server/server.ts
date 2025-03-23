@@ -224,3 +224,13 @@ async function init() {
 
 // Start the application
 init();
+
+process.on("SIGINT", () => {
+	logger.info("SIGINT received. Starting graceful shutdown...");
+	gracefulShutdown("SIGINT");
+});
+
+process.on("SIGTERM", () => {
+	logger.info("SIGTERM received. Starting graceful shutdown...");
+	gracefulShutdown("SIGTERM");
+});

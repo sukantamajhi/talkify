@@ -1,4 +1,4 @@
-import { getLocalStorageValue } from "@/lib/utils";
+import { doLogout, getLocalStorageValue } from "@/lib/utils";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { io, Socket, ManagerOptions } from "socket.io-client";
 
@@ -61,7 +61,19 @@ export const useSocket = () => {
 
 		// Connection error
 		newSocket.on("connect_error", (err) => {
-			console.error("Socket connection error:", err.message);
+			console.error("Socket connection error:", err);
+
+			if (err.message.includes("401")) {
+				doLogout();
+			}
+
+			if (err.message.includes("500")) {
+				doLogout();
+			}
+
+			if (err.message.includes("403")) {
+				doLogout();
+			}
 
 			// If we've tried too many times, force a transport change
 			if (reconnectAttempts.current >= maxReconnectAttempts) {

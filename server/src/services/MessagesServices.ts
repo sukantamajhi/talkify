@@ -191,8 +191,6 @@ const MessagesServices = (socket: ISocketUser, io: any): void => {
 					updatedAt: new Date().toISOString(),
 				};
 
-				logger.info({ message, constructedMessage }, "<<-- messages");
-
 				try {
 					// Publish to Redis for distribution
 					await pub.publish(

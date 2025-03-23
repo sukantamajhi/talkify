@@ -32,10 +32,6 @@ export default function ChatPage() {
 
 			const handleConnect = () => {
 				setSocketReady(true);
-				// Re-join room if we were in one before
-				if (room?._id && username) {
-					socket.emit("room::join", { roomId: room._id, username });
-				}
 			};
 
 			const handleDisconnect = () => {

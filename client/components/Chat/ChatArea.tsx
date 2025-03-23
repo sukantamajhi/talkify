@@ -542,7 +542,7 @@ function ChatArea({
 				{showScrollButton && (
 					<Button
 						onClick={scrollToBottom}
-						className='absolute bottom-4 right-4 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center shadow-lg z-10'
+						className='absolute bottom-4 right-1/2 rounded-full w-8 h-8 sm:w-10 sm:h-10 bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center shadow-lg z-10'
 						aria-label='Scroll to bottom'>
 						<ArrowDown className='h-4 w-4 sm:h-5 sm:w-5' />
 					</Button>

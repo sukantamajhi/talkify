@@ -74,7 +74,12 @@ class SocketService {
 				if (!token) {
 					logger.error("❌ Authentication failed: No token provided");
 					return next(
-						new Error("Authentication error: Token required")
+						new Error(
+							JSON.stringify({
+								message: "Authentication error: Token required",
+								statusCode: 401,
+							})
+						)
 					);
 				}
 
@@ -91,7 +96,13 @@ class SocketService {
 						"❌ Authentication failed: Invalid token or inactive user"
 					);
 					return next(
-						new Error("Authentication error: Invalid credentials")
+						new Error(
+							JSON.stringify({
+								message:
+									"Authentication error: Invalid credentials",
+								statusCode: 401,
+							})
+						)
 					);
 				}
 
@@ -107,7 +118,13 @@ class SocketService {
 						"❌ Authentication failed: User ID is missing"
 					);
 					return next(
-						new Error("Authentication error: User ID is missing")
+						new Error(
+							JSON.stringify({
+								message:
+									"Authentication error: User ID is missing",
+								statusCode: 401,
+							})
+						)
 					);
 				}
 
@@ -120,7 +137,15 @@ class SocketService {
 				next(); // Allow connection
 			} catch (error) {
 				logger.error("Socket authentication error:", error);
-				next(new Error("Internal server error during authentication"));
+				next(
+					new Error(
+						JSON.stringify({
+							message:
+								"Internal server error during authentication",
+							statusCode: 500,
+						})
+					)
+				);
 			}
 		});
 

@@ -1,6 +1,6 @@
-import {AxiosResponse} from "axios";
-import {type ClassValue, clsx} from "clsx";
-import {twMerge} from "tailwind-merge";
+import { AxiosResponse } from "axios";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -9,7 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 export function isDev() {
 	return process.env.NODE_ENV === "development";
 }
-
 
 export const setLocalStorageValue = (key: string, value: any) => {
 	if (typeof window === "undefined") return null;
@@ -48,4 +47,10 @@ export function getInitials(fullName: string) {
 	return nameParts[0][0]?.toUpperCase();
 }
 
-export const isResSuccess = (response: AxiosResponse<any, any>) => response.status.toString().startsWith("2")
+export const isResSuccess = (response: AxiosResponse<any, any>) =>
+	response.status.toString().startsWith("2");
+
+export const doLogout = () => {
+	localStorage.clear();
+	window.location.href = "/";
+};
